@@ -1,10 +1,88 @@
 <!DOCTYPE html>
-<!-- saved from url=(0033)http://kurain6.myds.me:8080/Home/ -->
+
 <html lang="zh"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>KurainHome</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="context-path" content="/Home/">
+	<script>
+        var url = 'http://kurain.myds.me:18080/HomePage/home/getDatas';
+        fetch(url).then((respons) => {
+        return respons.json();
+        }).then((data) => {
+            if(data.result == 'OK'){
+				//console.log(data.data.queryData);
+				let queryDatas = data.data.queryData;
+				queryDatas.forEach(queryData => {
+					//queryData.tableName
+					console.log(queryData);
+					reloadThisElement(queryData);
+				});
+            }            
+        }).catch((error) => {
+            console.log(error);
+        });
+
+		function reloadThisElement(queryData){
+			try {
+				let tableNo = queryData.tableNo;
+				console.log('重製 ' + tableNo + 'start ');
+				var thead_0 = document.getElementById('thead_' + tableNo);
+				var tbody_0 = document.getElementById('tbody_' + tableNo);
+
+				removeAllChildNodes(thead_0);				
+
+				var thead_0_tr	= addElement(thead_0	,'tr');
+				var thead_0_td	= addElement(thead_0_tr	,'td');
+				var thead_0_p	= addElement(thead_0_td	,'p');
+
+				thead_0_td.colSpan	= "2";
+				thead_0_p.innerHTML = queryData.tableName;	
+				console.log('重製 ' + tableNo + 'end ');
+
+				let urlBeans = queryData.urlBeans;
+				removeAllChildNodes(tbody_0);
+
+				urlBeans.forEach(urlBean => {
+					reloadThisElementUrl(tbody_0,urlBean);
+				});
+
+			}catch (e) {}
+		}
+
+		function reloadThisElementUrl(tbody_0,urlBean){
+			var tbody_0_tr	= addElement(tbody_0	,'tr');
+			var thead_0_td	= addElement(tbody_0_tr	,'td');
+			var thead_1_td	= addElement(tbody_0_tr	,'td');
+
+			var div_0		= addElement(thead_0_td	,'div');
+			var div_1		= addElement(thead_1_td	,'div');
+
+			var a_1			= addElement(div_1		,'a');
+
+			div_1.setAttribute('align','center');
+
+			a_1.setAttribute('href',urlBean.tableUrlAddress);
+			a_1.innerHTML	= '前往';
+			div_0.innerHTML	= urlBean.tableUrlName;
+		}
+
+
+		function removeAllChildNodes(parent) {
+			while (parent.firstChild) {
+				parent.removeChild(parent.firstChild);
+			}
+		}
+
+		function addElement(appendDom,appendElementName){
+			let newElement = document.createElement(appendElementName);
+			appendDom.append(newElement);
+			return newElement;
+		}
+
+
+
+    </script>
 </head>
 <body>
 	<div id="titleBar" name="titleBar" class="titleBar">
@@ -33,14 +111,14 @@
 		<div id="footBar0" name="footBar0">
 			<div id="tableDiv0" name="tableDiv0" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_1">
 						<tr>
 							<td colspan="2">
 								<p>搜尋引擎</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_1">
 				    	<tr>
 				    		<td>
 				    			<div>奇摩</div>
@@ -199,14 +277,14 @@
 			</div>
 			<div id="tableDiv1" name="tableDiv1" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_2">
 						<tr>
 							<td colspan="2">
 								<p>討論區</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_2">
 				    	<tr>
 				    		<td>
 				    			<div>伊莉</div>
@@ -347,14 +425,14 @@
 			</div>
 			<div id="tableDiv2" name="tableDiv2" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_3">
 						<tr>
 							<td colspan="2">
 								<p>信箱與雲端</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_3">
 				    	<tr>
 				    		<td>
 				    			<div>Gmail</div>
@@ -495,14 +573,14 @@
 			</div>
 			<div id="tableDiv3" name="tableDiv3" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_4">
 						<tr>
 							<td colspan="2">
 								<p>拍賣與貨運</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_4">
 				    	<tr>
 				    		<td>
 				    			<div>PChome線上購物</div>
@@ -678,14 +756,14 @@
 			
 			<div id="tableDiv4" name="tableDiv4" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_5">
 						<tr>
 							<td colspan="2">
 								<p>數位影音</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_5">
 				    	<tr>
 				    		<td>
 				    			<div>動漫花園資訊網</div>
@@ -850,14 +928,14 @@
 			</div>
 			<div id="tableDiv5" name="tableDiv5" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_6" >
 						<tr>
 							<td colspan="2">
 								<p>手機資訊</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_6">
 				    	<tr>
 				    		<td>
 				    			<div>Engadget 中文版</div>
@@ -1016,14 +1094,14 @@
 			</div>
 			<div id="tableDiv6" name="tableDiv6" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_7">
 						<tr>
 							<td colspan="2">
 								<p>遊戲專區</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_7">
 				    	<tr>
 				    		<td>
 				    			<div>寶可夢百科</div>
@@ -1161,14 +1239,14 @@
 			</div>
 			<div id="tableDiv7" name="tableDiv7" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_8">
 						<tr>
 							<td colspan="2">
 								<p>日文專區</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_8">
 				    	<tr>
 				    		<td>
 				    			<div>日文OJAD</div>
@@ -1314,14 +1392,14 @@
 			
 			<div id="tableDiv8" name="tableDiv8" class="tableDiv">
 				<table>
-					<thead>
+					<thead id="thead_9" >
 						<tr>
 							<td colspan="2">
 								<p>我的空間</p>
 							</td>
 						</tr>
 				    </thead>
-				    <tbody>
+				    <tbody id="tbody_9">
 				    	<tr>
 				    		<td>
 				    			<div>MyMas</div>
