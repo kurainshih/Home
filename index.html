@@ -5,6 +5,17 @@
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="context-path" content="/Home/">
+	<script src="js/parpar.js"></script>
+	<link rel=stylesheet type="text/css" href="css/index.css">
+	<script>
+		window.addEventListener('load', (event) => {
+			let loginBtn = document.getElementById('loginBtn');
+			loginBtn.addEventListener('click',function(e){
+				addParPar('hiddenBar');
+			});
+			//addParPar('hiddenBar');
+		});
+	</script>
 	<script>
         var url = 'http://kurain.myds.me:18080/HomePage/home/getDatas';
         fetch(url).then((respons) => {
@@ -80,7 +91,7 @@
 			return newElement;
 		}
 
-
+		
 
     </script>
 </head>
@@ -105,6 +116,9 @@
 			<a href="https://www.mobile01.com/forum.php">
 				<img class="footImg" src="./images/mobile01-facebook.jpg">
 			</a>
+		</div>
+		<div>
+			<button id="loginBtn" >登入</button>
 		</div>
 	</div>
 	<div id="footBar" name="footBar" class="footBar" align="center">
@@ -1972,27 +1986,9 @@
 			</div>
 		</div>
 		<div id="footBar3" name="footBar3">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 		</div>
-		
-		
-		
-		
-		
-		
-		
-		
+		<div id="hiddenBar" name="hiddenBar">
+		</div>
 	</div>
 
 <style>
@@ -2050,4 +2046,5 @@ table tr:nth-child(even)
 
 	
 		
-</body></html>
+</body>
+</html>

@@ -1,0 +1,11 @@
+#loginBtn {
+	position: absolute;
+	right: 0px;
+}
+
+#closeImg {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width : 25px;
+}
