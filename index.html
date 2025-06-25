@@ -1,2051 +1,626 @@
 <!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的首頁 - 個人導航中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<html lang="zh"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>KurainHome</title>
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="context-path" content="/Home/">
-	<script src="js/parpar.js"></script>
-	<link rel=stylesheet type="text/css" href="css/index.css">
-	<script>
-		window.addEventListener('load', (event) => {
-			let loginBtn = document.getElementById('loginBtn');
-			loginBtn.addEventListener('click',function(e){
-				addParPar('hiddenBar');
-			});
-			//addParPar('hiddenBar');
-		});
-	</script>
-	<script>
-        //var url = 'http://kurain.myds.me:18080/HomePage/home/getDatas';
-        var url = 'https://script.googleusercontent.com/macros/echo?user_content_key=6HvBPd-vSZ9AjTCqAGQjX1_QV6ZV9Gx5II_mkZ4Sntpl-OoAHajdZWmPaQpPT6YujpznMWYCVId1KYXz4LQckO30AVypzsCPm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnPnhtvVL6SIjLPu5RAc42Y9_FzMPegGpJh2ehHWpTxbg5DXmbLpVdwRLRek9Un12wcztm_2eh7TbY_Z3TeyyXfGdrDESAUIdDg&lib=MfUTEFOgN9-TtFqK6idcWm3uMSBuboRQq';
-        fetch(url).then((respons) => {
-        return respons.json();
-        }).then((data) => {
-            if(data.result == 'OK'){
-				//console.log(data.data.queryData);
-				let queryDatas = data.data.queryData;
-				queryDatas.forEach(queryData => {
-					//queryData.tableName
-					console.log(queryData);
-					reloadThisElement(queryData);
-				});
-            }            
-        }).catch((error) => {
-            console.log(error);
-        });
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
 
-		function reloadThisElement(queryData){
-			try {
-				let tableNo = queryData.tableNo;
-				console.log('重製 ' + tableNo + 'start ');
-				var thead_0 = document.getElementById('thead_' + tableNo);
-				var tbody_0 = document.getElementById('tbody_' + tableNo);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-				removeAllChildNodes(thead_0);				
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
 
-				var thead_0_tr	= addElement(thead_0	,'tr');
-				var thead_0_td	= addElement(thead_0_tr	,'td');
-				var thead_0_p	= addElement(thead_0_td	,'p');
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
 
-				thead_0_td.colSpan	= "2";
-				thead_0_p.innerHTML = queryData.tableName;	
-				console.log('重製 ' + tableNo + 'end ');
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
 
-				let urlBeans = queryData.urlBeans;
-				removeAllChildNodes(tbody_0);
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
 
-				urlBeans.forEach(urlBean => {
-					reloadThisElementUrl(tbody_0,urlBean);
-				});
+        .category-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-			}catch (e) {}
-		}
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
 
-		function reloadThisElementUrl(tbody_0,urlBean){
-			var tbody_0_tr	= addElement(tbody_0	,'tr');
-			var thead_0_td	= addElement(tbody_0_tr	,'td');
-			var thead_1_td	= addElement(tbody_0_tr	,'td');
+        .category-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4a5568;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
 
-			var div_0		= addElement(thead_0_td	,'div');
-			var div_1		= addElement(thead_1_td	,'div');
+        .category-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
 
-			var a_1			= addElement(div_1		,'a');
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
 
-			div_1.setAttribute('align','center');
+        .link-item {
+            display: block;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+            border-radius: 8px;
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
 
-			a_1.setAttribute('href',urlBean.tableUrlAddress);
-			a_1.innerHTML	= '前往';
-			div_0.innerHTML	= urlBean.tableUrlName;
-		}
+        .link-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+            border-color: rgba(255,255,255,0.3);
+        }
 
+        /* 不同分類的顏色主題 */
+        .search .category-title {
+            border-bottom-color: #667eea;
+        }
+        .search .category-title::before {
+            background: #667eea;
+        }
 
-		function removeAllChildNodes(parent) {
-			while (parent.firstChild) {
-				parent.removeChild(parent.firstChild);
-			}
-		}
+        .media .category-title {
+            border-bottom-color: #ed8936;
+        }
+        .media .category-title::before {
+            background: #ed8936;
+        }
+        .media .link-item:hover {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
 
-		function addElement(appendDom,appendElementName){
-			let newElement = document.createElement(appendElementName);
-			appendDom.append(newElement);
-			return newElement;
-		}
+        .tech .category-title {
+            border-bottom-color: #9f7aea;
+        }
+        .tech .category-title::before {
+            background: #9f7aea;
+        }
+        .tech .link-item:hover {
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+        }
 
-		
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin: 50px 0;
+        }
 
-    </script>
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .links-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+        }
+
+        .google-search {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .google-search input {
+            width: 60%;
+            max-width: 500px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-right: 10px;
+        }
+
+        .google-search button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .google-search button:hover {
+            background-color: #5a67d8;
+        }
+
+    </style>
+    <style>
+        .news .category-title {
+            border-bottom-color: #3182ce;
+        }
+        .news .category-title::before {
+            background: #3182ce;
+        }
+
+        .news-item {
+            display: block;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e2ecff 100%);
+            border-radius: 8px;
+            padding: 10px;
+            color: #2d3748;
+            text-decoration: none;
+            border: 1px solid #cbd5e0;
+            transition: all 0.3s ease;
+        }
+
+        .news-item:hover {
+            background: linear-gradient(135deg, #3182ce 0%, #63b3ed 100%);
+            color: white;
+            transform: scale(1.03);
+            border-color: transparent;
+        }
+
+        .news-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .news-thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+    </style>
 </head>
 <body>
-	<div id="titleBar" name="titleBar" class="titleBar">
-		<div class="titleDiv">		
-			<a href="https://www.google.com.tw/">
-				<img class="footImg" src="./images/Google.jpg">
-			</a>
-		</div>
-		<div class="titleDiv">	
-			<a href="https://www.facebook.com/?ref=logo">
-				<img class="footImg" src="./images/FaceBook.jpg">
-			</a>
-		</div>
-		<div class="titleDiv">	
-			<a href="https://ani.gamer.com.tw/">
-				<img class="footImg" src="./images/crazy_logo.png">
-			</a>
-		</div>
-		<div class="titleDiv">	
-			<a href="https://www.mobile01.com/forum.php">
-				<img class="footImg" src="./images/mobile01-facebook.jpg">
-			</a>
-		</div>
-		<div>
-			<button id="loginBtn" >登入</button>
-		</div>
-	</div>
-	<div id="footBar" name="footBar" class="footBar" align="center">
-		<div id="footBar0" name="footBar0">
-			<div id="tableDiv0" name="tableDiv0" class="tableDiv">
-				<table>
-					<thead id="thead_1">
-						<tr>
-							<td colspan="2">
-								<p>搜尋引擎</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_1">
-				    	<tr>
-				    		<td>
-				    			<div>奇摩</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://tw.yahoo.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>Google</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.google.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>Pchome</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.pchome.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>Facebook</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.facebook.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>YouTube</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.youtube.com/?gl=TW&amp;hl=zh-TW" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div></div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://kurain6.myds.me:8080/Home/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>科技紫微網</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://astro.click108.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>手機王</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.sogi.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>台鐵訂票系統</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://tip.railway.gov.tw/tra-tip-web/tip" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>discord</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://discord.com/channels/@me" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>test</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://kurain6.myds.me:8080/Home/google.com.tw" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv1" name="tableDiv1" class="tableDiv">
-				<table>
-					<thead id="thead_2">
-						<tr>
-							<td colspan="2">
-								<p>討論區</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_2">
-				    	<tr>
-				    		<td>
-				    			<div>伊莉</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www07.eyny.com/index.php" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>巴哈姆特</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.gamer.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>Mobile01</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.mobile01.com/forum.php" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>卡提諾</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://ck101.com/index.php" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>小老婆機車網</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://forum.jorsindo.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr6">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv6" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr7">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv7" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr8">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv8" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr9">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv9" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv2" name="tableDiv2" class="tableDiv">
-				<table>
-					<thead id="thead_3">
-						<tr>
-							<td colspan="2">
-								<p>信箱與雲端</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_3">
-				    	<tr>
-				    		<td>
-				    			<div>Gmail</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://mail.google.com/mail/u/0/#inbox" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>Dropbox</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.dropbox.com/h" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>Mega</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://mega.nz/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>百度直接下載</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.baiduyun.wiki/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>星空不寂寞</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.xingkbjm.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr6">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv6" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr7">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv7" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr8">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv8" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr9">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv9" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv3" name="tableDiv3" class="tableDiv">
-				<table>
-					<thead id="thead_4">
-						<tr>
-							<td colspan="2">
-								<p>拍賣與貨運</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_4">
-				    	<tr>
-				    		<td>
-				    			<div>PChome線上購物</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://shopping.pchome.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>淘寶網</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://world.taobao.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>自動買</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.autobuy.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>原價屋首頁</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.coolpc.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>欣亞數位</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.sinya.com.tw/diy/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>機油倉庫</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.oilwarehouse.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div></div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://kurain6.myds.me:8080/Home/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>一路發</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.elf.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>黑貓宅急便</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.t-cat.com.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>郵局</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_1&amp;_MENU_ID=189&amp;_SYS_ID=D&amp;_ACTIVE_ID=190" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>klook</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.klook.com/zh-TW/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>kkday</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.kkday.com/zh-tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			
-			
-			
-			
-			
-			
-			
-			
-		</div>
-		<div id="footBar1" name="footBar1">
-			
-			
-			
-			
-			<div id="tableDiv4" name="tableDiv4" class="tableDiv">
-				<table>
-					<thead id="thead_5">
-						<tr>
-							<td colspan="2">
-								<p>數位影音</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_5">
-				    	<tr>
-				    		<td>
-				    			<div>動漫花園資訊網</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://share.dmhy.org/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>Anime1</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://anime1.me/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>NHK</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://tv.itver.cc/nhk-general-tv/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>E電視</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://tv.itver.cc/nexttv/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>AbemaTV</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://abema.tv/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>jpmarumaru</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.jpmarumaru.com/tw/index.asp" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>YouTube轉檔器</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://tubget.com/cn/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>ACG動漫網</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.agefans.tv/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>第二維度</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://second-dimension.org/home/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>櫻花動漫</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.yhdm.tv/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>惡魔島動漫</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.emddm.org/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>E_ACG</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://eacg.net/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>acgsecrets.hk</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://acgsecrets.hk/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv5" name="tableDiv5" class="tableDiv">
-				<table>
-					<thead id="thead_6" >
-						<tr>
-							<td colspan="2">
-								<p>手機資訊</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_6">
-				    	<tr>
-				    		<td>
-				    			<div>Engadget 中文版</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://chinese.engadget.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>安卓中文網站</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://apk.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>MIUI官方論壇</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.miui.com/forum.php" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>MIUI社區</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.miui.com/index.html" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>小米ROM刷機包</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://mirom.ezbox.idv.tw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>XDA</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://forum.xda-developers.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>小米台灣</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.mi.com/tw" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>小米miui精簡</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://mi-globe.com/miui-firmware-rom-builder-features/25/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>小米miui精簡2</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://mifirm.net/model/umi.ttt" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>mi-globe.com</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://mi-globe.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>mifirm</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://mifirm.net/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv6" name="tableDiv6" class="tableDiv">
-				<table>
-					<thead id="thead_7">
-						<tr>
-							<td colspan="2">
-								<p>遊戲專區</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_7">
-				    	<tr>
-				    		<td>
-				    			<div>寶可夢百科</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://wiki.52poke.com/wiki/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>口袋圖鑑</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.pokedex.app/zh/home" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>口袋圖鑑2</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://pokemon.aucy.com/index.php" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>LOL近期查詢</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.leagueofgraphs.com/zh/tft" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr6">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv6" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr7">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv7" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr8">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv8" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr9">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv9" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr10">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv10" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv7" name="tableDiv7" class="tableDiv">
-				<table>
-					<thead id="thead_8">
-						<tr>
-							<td colspan="2">
-								<p>日文專區</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_8">
-				    	<tr>
-				    		<td>
-				    			<div>日文OJAD</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://www.gavo.t.u-tokyo.ac.jp/ojad/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>日文語音合成</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://voicetext.jp/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr6">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv6" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr7">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv7" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr8">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv8" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr9">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv9" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr10">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv10" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr11">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv11" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr12">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv12" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			
-			
-			
-			
-		</div>
-		<div id="footBar2" name="footBar2">
-			
-			
-			
-			
-			
-			
-			
-			
-			<div id="tableDiv8" name="tableDiv8" class="tableDiv">
-				<table>
-					<thead id="thead_9" >
-						<tr>
-							<td colspan="2">
-								<p>我的空間</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody id="tbody_9">
-				    	<tr>
-				    		<td>
-				    			<div>MyMas</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://kurain6.myds.me:8080/Home/:5000" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>MyMail</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://kurain6.myds.me:8080/mail/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr6">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv6" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr7">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv7" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr8">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv8" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr9">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv9" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr10">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv10" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr11">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv11" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr12">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv12" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv9" name="tableDiv9" class="tableDiv">
-				<table>
-					<thead>
-						<tr>
-							<td colspan="2">
-								<p>待修改</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody>
-				    	<tr>
-				    		<td>
-				    			<div>1</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://r18.clickme.net/c/new" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>6</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://freejavbt.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>7</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://javdb.com/?vft=1&amp;vst=1" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>8</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.1080fhd.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>9</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.sehuatang.org/forum-37-1.html" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>10</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.141jav.com/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>11</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://k6.7086xx.work/pw/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>12</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.sehuatang.org/index.php" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>13</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://jd.kx7t.site/2048/thread.php?fid-3-page-1.html" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv10" name="tableDiv10" class="tableDiv">
-				<table>
-					<thead>
-						<tr>
-							<td colspan="2">
-								<p>待修改</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody>
-				    	<tr>
-				    		<td>
-				    			<div>音樂解析</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://music.zhuolin.wang/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>墨灵音乐</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://music.qugeek.com/app/" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>聊天室</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="http://kurain.myds.me:7070/Home/messageServer/loginPage" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr6">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv6" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr7">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv7" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr8">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv8" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr9">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv9" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr10">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv10" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr11">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv11" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-			<div id="tableDiv11" name="tableDiv11" class="tableDiv">
-				<table>
-					<thead>
-						<tr>
-							<td colspan="2">
-								<p>待修改</p>
-							</td>
-						</tr>
-				    </thead>
-				    <tbody>
-				    	<tr>
-				    		<td>
-				    			<div>kkday_全日卷</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.kkday.com/zh-tw/product/21189" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<div>kkday_北陸卷</div>
-				    		</td>
-				    		<td>
-						    	<div align="center">
-						    		<a href="https://www.kkday.com/zh-tw/product/21262" onclick="javascirpt:fn(this)">前往</a>
-						    	</div>
-							</td>
-				    	</tr>
-				    	<tr id="nullTr0">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv0" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr1">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv1" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr2">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv2" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr3">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv3" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr4">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv4" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr5">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv5" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr6">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv6" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr7">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv7" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr8">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv8" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr9">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv9" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr10">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv10" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr11">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv11" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	<tr id="nullTr12">
-				    		<td>
-				    			<div align="center"></div>
-				    		</td>
-				    		<td>
-				    			<div id="nullDiv12" style="visibility:hidden;">暫無</div>
-				    		</td>
-				    	</tr>
-				    	
-				    	
-				    </tbody>
-				</table>
-			</div>
-		</div>
-		<div id="footBar3" name="footBar3">
-		</div>
-		<div id="hiddenBar" name="hiddenBar">
-		</div>
-	</div>
+    <div class="container">
+        <div class="header">
+            <h1>個人導航中心</h1>
+            <p>您的專屬網路入口，快速訪問常用網站</p>
+        </div>
 
-<style>
-#footBar{
-	width: 80%;
-	margin:0 auto;
-}
-.tableDiv {
-	width: 25%;
-	line-height:50px;
-	padding:0px;
-	float:left;
-}
+        <!-- Google 搜尋欄位 -->
+        <div class="google-search">
+            <input type="text" id="googleSearchInput" placeholder="輸入關鍵字進行 Google 搜尋..." />
+            <button onclick="doGoogleSearch()">搜尋</button>
+        </div>
+        <br/>
 
-table
-{
-	width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
-    text-align: center;
-}
-table td, table th
-{
-    border: 1px solid #cad9ea;
-    color: #666;
-    height: 30px;
-}
-table thead tr td
-{
-    background-color: #CCE8EB;
-}
-table tr:nth-child(odd)
-{
-    background: #fff;
-}
-table tr:nth-child(even)
-{
-    background: #F5FAFA;
-}
-.titleBar {
-	width: 100%;
-	float:left;
-}
-.titleDiv {
-	width: 10%;
-	padding:0px;
-	float:left;
-}
-.footImg {
-	width: 100%;
-/* 	width:119px; */
-	height:90px;
-}
-</style>
+        <div id="category-container" class="category-grid">
 
-	
-		
+            <div class="category-card news">
+                <h2 class="category-title">Yahoo 今日新聞</h2>
+                <div class="links-grid" id="yahoo-news-container">
+                    <div class="loading">正在載入新聞...</div>
+                </div>
+            </div>
+
+            <!-- 搜尋引擎 -->
+            <div class="category-card search">
+                <h2 class="category-title">搜尋引擎</h2>
+                <div class="links-grid">
+                    <a href="https://tw.yahoo.com/" class="link-item" target="_blank" rel="noopener noreferrer">奇摩</a>
+                    <a href="https://www.pchome.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">Pchome</a>
+                    <a href="https://www.youtube.com/" class="link-item" target="_blank" rel="noopener noreferrer">YouTube</a>
+                    <a href="https://www.click108.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">科技紫微網</a>
+                    <a href="https://www.sogi.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">手機王</a>
+                    <a href="https://www.railway.gov.tw/tra-tip-web/tip" class="link-item" target="_blank" rel="noopener noreferrer">台鐵訂票系統</a>
+                    <a href="https://discord.com/" class="link-item" target="_blank" rel="noopener noreferrer">discord</a>
+                    <a href="#" class="link-item">test</a>
+                </div>
+            </div>            
+
+            <!-- 討論區 -->
+            <div class="category-card forum">
+                <h2 class="category-title">討論區</h2>
+                <div class="links-grid">
+                    <a href="https://www07.eyny.com/index.php" class="link-item" target="_blank" rel="noopener noreferrer">伊莉</a>
+                    <a href="https://www.gamer.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">巴哈姆特</a>
+                    <a href="https://www.mobile01.com/forum.php" class="link-item" target="_blank" rel="noopener noreferrer">Mobile01</a>
+                    <a href="https://www.ck101.com/index.php" class="link-item" target="_blank" rel="noopener noreferrer">卡提諾</a>
+                    <a href="https://forum.jorsindo.com/" class="link-item" target="_blank" rel="noopener noreferrer">小老婆機車網</a>
+                </div>
+            </div>
+
+            <!-- 信箱與雲端 -->
+            <div class="category-card forum">
+                <h2 class="category-title">信箱與雲端</h2>
+                <div class="links-grid">
+                    <a href="https://mail.google.com/mail/u/0/#inbox" class="link-item" target="_blank" rel="noopener noreferrer">Gmail</a>
+                    <a href="https://www.dropbox.com/h" class="link-item" target="_blank" rel="noopener noreferrer">Dropbox</a>
+                    <a href="https://mega.nz/" class="link-item" target="_blank" rel="noopener noreferrer">Mega</a>
+                    <a href="https://www.baiduyun.wiki/" class="link-item" target="_blank" rel="noopener noreferrer">百度直接下載</a>
+                    <a href="http://www.xingkbjm.com/" class="link-item" target="_blank" rel="noopener noreferrer">星空不寂寞</a>
+                </div>
+            </div>
+
+            <!-- 拍賣與貨運 -->
+            <div class="category-card forum">
+                <h2 class="category-title">拍賣與貨運</h2>
+                <div class="links-grid">
+                    <a href="http://shopping.pchome.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">PChome線上購物</a>
+                    <a href="https://world.taobao.com/" class="link-item" target="_blank" rel="noopener noreferrer">淘寶網</a>
+                    <a href="https://www.autobuy.tw/" class="link-item" target="_blank" rel="noopener noreferrer">自動買</a>
+                    <a href="http://www.coolpc.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">原價屋首頁</a>
+                    <a href="https://www.sinya.com.tw/diy/" class="link-item" target="_blank" rel="noopener noreferrer">欣亞數位</a>
+                    <a href="https://www.oilwarehouse.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">機油倉庫</a>
+                    <a href="https://www.elf.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">一路發</a>
+                    <a href="http://www.t-cat.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">黑貓宅急便</a>
+                    <a href="http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_1&_MENU_ID=189&_SYS_ID=D&_ACTIVE_ID=190" class="link-item" target="_blank" rel="noopener noreferrer">郵局</a>
+                    <a href="https://www.klook.com/zh-TW/" class="link-item" target="_blank" rel="noopener noreferrer">klook</a>
+                    <a href="https://www.kkday.com/zh-tw/" class="link-item" target="_blank" rel="noopener noreferrer">kkday</a>
+                </div>
+            </div>
+
+            <!-- 數位影音 -->
+            <div class="category-card media">
+                <h2 class="category-title">數位影音</h2>
+                <div class="links-grid">
+                    <a href="https://share.dmhy.org/" class="link-item" target="_blank" rel="noopener noreferrer">動漫花園資訊網</a>
+                    <a href="https://anime1.me/" class="link-item" target="_blank" rel="noopener noreferrer">Anime1</a>
+                    <a href="https://www3.nhk.or.jp/" class="link-item" target="_blank" rel="noopener noreferrer">NHK</a>
+                    <a href="#" class="link-item">E電視</a>
+                    <a href="https://abema.tv/" class="link-item" target="_blank" rel="noopener noreferrer">AbemaTV</a>
+                    <a href="https://jpmarumaru.com/" class="link-item" target="_blank" rel="noopener noreferrer">jpmarumaru</a>
+                    <a href="https://www.y2mate.com/" class="link-item" target="_blank" rel="noopener noreferrer">YouTube轉檔器</a>
+                    <a href="#" class="link-item">ACG動漫網</a>
+                    <a href="#" class="link-item">第二維度</a>
+                    <a href="#" class="link-item">櫻花動漫</a>
+                    <a href="#" class="link-item">惡魔島動漫</a>
+                    <a href="#" class="link-item">E_ACG</a>
+                    <a href="https://acgsecrets.hk/" class="link-item" target="_blank" rel="noopener noreferrer">acgsecrets.hk</a>
+                </div>
+            </div>
+
+            <!-- 手機資訊 -->
+            <div class="category-card tech">
+                <h2 class="category-title">手機資訊</h2>
+                <div class="links-grid">
+                    <a href="https://chinese.engadget.com/" class="link-item" target="_blank" rel="noopener noreferrer">Engadget 中文版</a>
+                    <a href="https://www.android-tw.com/" class="link-item" target="_blank" rel="noopener noreferrer">安卓中文網站</a>
+                    <a href="https://www.miui.com/" class="link-item" target="_blank" rel="noopener noreferrer">MIUI官方論壇</a>
+                    <a href="https://web.vip.miui.com/" class="link-item" target="_blank" rel="noopener noreferrer">MIUI社區</a>
+                    <a href="#" class="link-item">小米ROM刷機包</a>
+                    <a href="https://www.xda-developers.com/" class="link-item" target="_blank" rel="noopener noreferrer">XDA</a>
+                    <a href="https://www.mi.com/tw/" class="link-item" target="_blank" rel="noopener noreferrer">小米台灣</a>
+                    <a href="#" class="link-item">小米miui精簡</a>
+                    <a href="#" class="link-item">小米miui精簡2</a>
+                    <a href="https://mi-globe.com/" class="link-item" target="_blank" rel="noopener noreferrer">mi-globe.com</a>
+                    <a href="https://mifirm.net/" class="link-item" target="_blank" rel="noopener noreferrer">mifirm</a>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- 依此方式將其餘分類一一加入 -->
+</div>
+    </div>
+
+    <script>
+        // 完整的網站資料 JSON 結構（根據您的 baseHome.html）
+        const websiteData = {
+            "搜尋引擎": {
+                "categoryClass": "search",
+                "links": [
+                    { "name": "奇摩", "url": "https://tw.yahoo.com/" },
+                    { "name": "Pchome", "url": "https://www.pchome.com.tw/" },
+                    { "name": "YouTube", "url": "https://www.youtube.com/" },
+                    { "name": "科技紫微網", "url": "https://www.click108.com.tw/" },
+                    { "name": "手機王", "url": "https://www.sogi.com.tw/" },
+                    { "name": "台鐵訂票系統", "url": "https://www.railway.gov.tw/tra-tip-web/tip" },
+                    { "name": "discord", "url": "https://discord.com/" },
+                    { "name": "test", "url": "#" }
+                ]
+            },
+            "討論區": {
+                "categoryClass": "forum",
+                "links": [
+                    { "name": "伊莉", "url": "https://www07.eyny.com/index.php" },
+                    { "name": "巴哈姆特", "url": "https://www.gamer.com.tw/" },
+                    { "name": "Mobile01", "url": "https://www.mobile01.com/forum.php" },
+                    { "name": "卡提諾", "url": "https://www.ck101.com/index.php" },
+                    { "name": "小老婆機車網", "url": "https://forum.jorsindo.com/" }
+                ]
+            },
+            "信箱與雲端": {
+                "categoryClass": "forum",
+                "links": [
+                    { "name": "Gmail", "url": "https://mail.google.com/mail/u/0/#inbox" },
+                    { "name": "Dropbox", "url": "https://www.dropbox.com/h" },
+                    { "name": "Mega", "url": "https://mega.nz/" },
+                    { "name": "百度直接下載", "url": "https://www.baiduyun.wiki/" },
+                    { "name": "星空不寂寞", "url": "http://www.xingkbjm.com/" }
+                ]
+            },
+            "拍賣與貨運": {
+                "categoryClass": "forum",
+                "links": [
+                    { "name": "PChome線上購物", "url": "http://shopping.pchome.com.tw/" },
+                    { "name": "淘寶網", "url": "https://world.taobao.com/" },
+                    { "name": "自動買", "url": "https://www.autobuy.tw/" },
+                    { "name": "原價屋首頁", "url": "http://www.coolpc.com.tw/" },
+                    { "name": "欣亞數位", "url": "https://www.sinya.com.tw/diy/" },
+                    { "name": "機油倉庫", "url": "https://www.oilwarehouse.com.tw/" },
+                    { "name": "一路發", "url": "https://www.elf.com.tw/" },
+                    { "name": "黑貓宅急便", "url": "http://www.t-cat.com.tw/" },
+                    { "name": "郵局", "url": "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_1&_MENU_ID=189&_SYS_ID=D&_ACTIVE_ID=190" },
+                    { "name": "klook", "url": "https://www.klook.com/zh-TW/" },
+                    { "name": "kkday", "url": "https://www.kkday.com/zh-tw/" }
+                ]
+            },
+            "數位影音": {
+                "categoryClass": "media",
+                "links": [
+                    { "name": "動漫花園資訊網", "url": "https://share.dmhy.org/" },
+                    { "name": "Anime1", "url": "https://anime1.me/" },
+                    { "name": "NHK", "url": "https://www3.nhk.or.jp/" },
+                    { "name": "E電視", "url": "#" },
+                    { "name": "AbemaTV", "url": "https://abema.tv/" },
+                    { "name": "jpmarumaru", "url": "https://jpmarumaru.com/" },
+                    { "name": "YouTube轉檔器", "url": "https://www.y2mate.com/" },
+                    { "name": "ACG動漫網", "url": "#" },
+                    { "name": "第二維度", "url": "#" },
+                    { "name": "櫻花動漫", "url": "#" },
+                    { "name": "惡魔島動漫", "url": "#" },
+                    { "name": "E_ACG", "url": "#" },
+                    { "name": "acgsecrets.hk", "url": "https://acgsecrets.hk/" }
+                ]
+            },
+            "手機資訊": {
+                "categoryClass": "tech",
+                "links": [
+                    { "name": "Engadget 中文版", "url": "https://chinese.engadget.com/" },
+                    { "name": "安卓中文網站", "url": "https://www.android-tw.com/" },
+                    { "name": "MIUI官方論壇", "url": "https://www.miui.com/" },
+                    { "name": "MIUI社區", "url": "https://web.vip.miui.com/" },
+                    { "name": "小米ROM刷機包", "url": "#" },
+                    { "name": "XDA", "url": "https://www.xda-developers.com/" },
+                    { "name": "小米台灣", "url": "https://www.mi.com/tw/" },
+                    { "name": "小米miui精簡", "url": "#" },
+                    { "name": "小米miui精簡2", "url": "#" },
+                    { "name": "mi-globe.com", "url": "https://mi-globe.com/" },
+                    { "name": "mifirm", "url": "https://mifirm.net/" }
+                ]
+            }
+        };
+
+        // 動態生成選單的函數
+        function generateMenu(data) {
+            const container = document.getElementById('category-container');
+
+            // 移除舊的分類卡片（但保留手動插入的 news 區塊）
+            const oldCards = container.querySelectorAll('.category-card:not(.news)');
+            oldCards.forEach(card => card.remove());
+
+            // 依序建立新的分類卡片（略過已存在的）
+            for (const categoryName in data) {
+                const category = data[categoryName];
+
+                // 跳過已經寫死在 HTML 裡的分類
+                if (categoryName === 'Yahoo 今日新聞') continue;
+
+                const card = document.createElement('div');
+                card.className = `category-card ${category.categoryClass}`;
+                card.innerHTML = `
+                    <h2 class="category-title">${categoryName}</h2>
+                    <div class="links-grid">
+                        ${category.links.map(link => `
+                            <a href="${link.url}" class="link-item" ${link.url !== '#' ? 'target="_blank" rel="noopener noreferrer"' : ''}>${link.name}</a>
+                        `).join('')}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            }
+        }
+
+        // 模擬載入延遲並生成選單
+        function loadMenu() {
+            // 模擬網路載入延遲
+            setTimeout(() => {
+                try {
+                    generateMenu(websiteData);
+                    
+                    // 隱藏載入提示，顯示選單
+                    if (document.getElementById('loading')) {
+                        document.getElementById('loading').style.display = 'none'; // 或其他樣式設定
+                    } else {
+                        console.log('找不到指定的元素');
+                    }
+                    document.getElementById('category-container').style.display = 'grid';
+                    
+                    console.log('選單載入完成，共載入了以下分類：');
+                    Object.keys(websiteData).forEach(category => {
+                        console.log(`- ${category}: ${websiteData[category].links.length} 個連結`);
+                    });
+                } catch (error) {
+                    console.error('載入選單時發生錯誤:', error);
+                    document.getElementById('loading').innerHTML = '載入失敗，請重新整理頁面';
+                }
+            }, 800); // 0.8秒載入時間
+        }
+
+        // 頁面載入完成後執行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('開始載入選單資料...');
+            loadMenu();
+        });
+
+        // 新增連結的函數（方便日後擴充）
+        function addNewLink(categoryName, linkName, linkUrl) {
+            if (websiteData[categoryName]) {
+                websiteData[categoryName].links.push({
+                    name: linkName,
+                    url: linkUrl
+                });
+                generateMenu(websiteData); // 重新生成選單
+                console.log(`已新增連結: ${linkName} 到 ${categoryName} 分類`);
+            } else {
+                console.error(`找不到分類: ${categoryName}`);
+            }
+        }
+
+        // 新增分類的函數（方便日後擴充）
+        function addNewCategory(categoryName, categoryClass, links = []) {
+            websiteData[categoryName] = {
+                categoryClass: categoryClass,
+                links: links
+            };
+            generateMenu(websiteData); // 重新生成選單
+            console.log(`已新增分類: ${categoryName}`);
+        }
+
+        // 匯出資料的函數（方便備份）
+        function exportData() {
+            const dataStr = JSON.stringify(websiteData, null, 2);
+            console.log('網站資料 JSON：');
+            console.log(dataStr);
+            return dataStr;
+        }
+
+        // 匯入資料的函數（方便還原）
+        function importData(jsonData) {
+            try {
+                const newData = JSON.parse(jsonData);
+                Object.assign(websiteData, newData);
+                generateMenu(websiteData);
+                console.log('資料匯入成功');
+            } catch (error) {
+                console.error('匯入資料失敗:', error);
+            }
+        }
+
+        function doGoogleSearch() {
+            const input = document.getElementById('googleSearchInput');
+            const query = input.value.trim();
+            if (query) {
+                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                window.open(searchUrl, '_blank');
+            }
+        }
+
+        // 監聽 Enter 鍵觸發搜尋
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('googleSearchInput');
+            if (input) {
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        doGoogleSearch();
+                    }
+                });
+            }
+
+            console.log('開始載入選單資料...');
+            loadMenu();
+            loadYahooNews(); // 加這一行
+        });
+
+    </script>
+    <script>
+        function loadYahooNews() {
+    const url = 'https://rss2json.com/api.json?rss_url=https://tw.news.yahoo.com/rss';
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('yahoo-news-container');
+            container.innerHTML = '';
+
+            console.log(data);
+            data.items.slice(0, 6).forEach(item => {
+                const newsUrl = item.link;
+                const title = item.title;
+
+                let thumbnail = 'https://s.yimg.com/rz/l/yahoo_news_zh-Hant-TW_f_p_bestfit_news.png';
+
+                if (item.enclosure && item.enclosure.link && /\.(jpg|jpeg|png|webp)$/i.test(item.enclosure.link)) {
+                    thumbnail = item.enclosure.link;
+                }else if(item.content){
+                    thumbnail = item.content;
+                }
+
+                const newsHtml = `
+                    <a href="${newsUrl}" target="_blank" rel="noopener noreferrer" class="news-item">
+                        <img src="${thumbnail}" class="news-thumb" alt="新聞縮圖" />
+                        <div class="news-title">${title}</div>
+                    </a>
+                `;
+
+                container.innerHTML += newsHtml;
+            });
+        })
+        .catch(err => {
+            console.error('無法載入 Yahoo 新聞:', err);
+            document.getElementById('yahoo-news-container').innerHTML = '<div class="loading">載入失敗</div>';
+        });
+}
+    </script>
 </body>
 </html>
