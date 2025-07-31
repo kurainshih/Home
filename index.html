@@ -25,9 +25,17 @@
         }
 
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 40px;
             color: white;
+            position: relative;
+        }
+
+        .header-title {
+            text-align: center;
+            flex-grow: 1;
         }
 
         .header h1 {
@@ -242,8 +250,27 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>個人導航中心</h1>
-            <p>您的專屬網路入口，快速訪問常用網站</p>
+            <div class="header-title">
+                <h1>Kurain Home</h1>
+            </div>
+            <div class="google-menu-container">                
+                <svg class="gb_F" style="height: 40px;" focusable="false" viewBox="0 0 24 24">
+                    <path d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM16,6c0,1.1 0.9,2 2,2s2,-0.9 2,-2 -0.9,-2 -2,-2 -2,0.9 -2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z"></path>
+                    <image src="https://ssl.gstatic.com/gb/images/bar/al-icon.png" alt="" height="24" width="24" style="border:none;display:none \9"></image>
+                </svg>                
+                <div class="google-menu">
+                    <a href="https://www.google.com" class="google-menu-item">Google</a>
+                    <a href="https://mail.google.com" class="google-menu-item">Gmail</a>
+                    <a href="https://www.google.com/maps" class="google-menu-item">Maps</a>
+                    <a href="https://www.youtube.com" class="google-menu-item">YouTube</a>
+                    <a href="https://play.google.com" class="google-menu-item">Play</a>
+                    <a href="https://news.google.com" class="google-menu-item">News</a>
+                    <a href="https://drive.google.com" class="google-menu-item">Drive</a>
+                    <a href="https://www.google.com/calendar" class="google-menu-item">Calendar</a>
+                    <a href="https://photos.google.com" class="google-menu-item">Photos</a>
+                    <a href="https://translate.google.com" class="google-menu-item">Translate</a>
+                </div>
+            </div>
         </div>
 
         <!-- Google 搜尋欄位 -->
@@ -266,6 +293,7 @@
             <div class="category-card search">
                 <h2 class="category-title">搜尋引擎</h2>
                 <div class="links-grid">
+                    <a href="https://www.google.com/" class="link-item" target="_blank" rel="noopener noreferrer">Google</a>
                     <a href="https://tw.yahoo.com/" class="link-item" target="_blank" rel="noopener noreferrer">奇摩</a>
                     <a href="https://www.pchome.com.tw/" class="link-item" target="_blank" rel="noopener noreferrer">Pchome</a>
                     <a href="https://www.youtube.com/" class="link-item" target="_blank" rel="noopener noreferrer">YouTube</a>
@@ -369,6 +397,7 @@
             "搜尋引擎": {
                 "categoryClass": "search",
                 "links": [
+                    { "name": "Google", "url": "https://www.google.com/" },
                     { "name": "奇摩", "url": "https://tw.yahoo.com/" },
                     { "name": "Pchome", "url": "https://www.pchome.com.tw/" },
                     { "name": "YouTube", "url": "https://www.youtube.com/" },
@@ -511,6 +540,21 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('開始載入選單資料...');
             loadMenu();
+
+            const menuButton = document.querySelector('.gb_F');
+            const menu = document.querySelector('.google-menu');
+            menu.style.display = 'none';
+
+
+            menuButton.addEventListener('click', (event) => {
+                if(menu.style.display == 'none'){
+                    menu.style.display = 'block';
+                }else{
+                    menu.style.display = 'none';
+                }
+            });
+
+            
         });
 
         // 新增連結的函數（方便日後擴充）
@@ -577,6 +621,20 @@
                 });
             }
 
+            const menuButton = document.querySelector('.google-menu-button');
+            const menu = document.querySelector('.google-menu');
+
+            menuButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                menu.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!menu.contains(event.target)) {
+                    menu.classList.remove('show');
+                }
+            });
+
             console.log('開始載入選單資料...');
             loadMenu();
             loadYahooNews(); // 加這一行
@@ -602,8 +660,6 @@
 
                 if (item.enclosure && item.enclosure.link && /\.(jpg|jpeg|png|webp)$/i.test(item.enclosure.link)) {
                     thumbnail = item.enclosure.link;
-                }else if(item.content){
-                    thumbnail = item.content;
                 }
 
                 const newsHtml = `
