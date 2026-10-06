@@ -26,11 +26,11 @@
     },
     {
       "category": "programming",
-      "title": "JDK 27 偏向漸進式更新，JDK 28 將迎來 Project Valhalla 重要進展",
-      "summary": "InfoWorld 分析指出，JDK 27 的多數變更較偏向現有預覽功能的延續與成熟化，而真正更具結構性影響的更新預計集中在 JDK 28。Project Valhalla 的進展尤其值得 Java 開發者追蹤，未來可能改變 value types 與資料布局等核心能力。",
-      "source": "InfoWorld",
-      "publishedAt": "2026-10-05",
-      "url": "https://www.infoworld.com/article/4229750/jdk-27-the-quiet-before-the-storm.html"
+      "title": "JDK 28 的 JEP 542：PEM Encodings of Cryptographic Objects 正式 targeted",
+      "summary": "OpenJDK 已將 JEP 542（PEM Encodings of Cryptographic Objects）target 到 JDK 28。這項功能旨在提供標準 API 來編碼與解碼常見密碼學物件的 PEM 格式，減少 Java 應用在憑證、金鑰與加密物件處理上依賴自製或第三方解析程式的需求。",
+      "source": "Inside.java",
+      "publishedAt": "2026-10-06",
+      "url": "https://inside.java/2026/10/06/jep542-target-jdk28/"
     },
     {
       "category": "ai-llm",
@@ -58,6 +58,40 @@
     },
     {
       "category": "hardware",
+      "title": "Samsung 加強 HBM 散熱方案，因應 TSMC CoWoS 封裝持續放大",
+      "summary": "Samsung 正擴大 HBM 熱管理布局，除了記憶體堆疊本身，也開始因應更大型 AI 封裝的整體散熱需求。隨 TSMC CoWoS 尺寸與功耗持續提高，HBM 與先進封裝的熱設計已成為 AI 加速器供應鏈的重要瓶頸之一。",
+      "source": "DIGITIMES",
+      "publishedAt": "2026-10-06T12:15:00+08:00",
+      "url": "https://www.digitimes.com/news/a20261006VL210/samsung-hbm-cooling-tsmc-cowos.html?chid=10"
+    },
+    {
+      "category": "hardware",
+      "title": "Solidigm 擴大台灣 SSD 生產基地，搶攻 AI 伺服器供應鏈",
+      "summary": "Solidigm 正擴大台灣的生產布局，以強化資料中心 SSD 與 AI 伺服器供應能力。AI 基礎設施持續推升企業級 NAND 與高容量 SSD 需求，台灣供應鏈的重要性也隨之提高。",
+      "source": "DIGITIMES",
+      "publishedAt": "2026-10-06T11:57:00+08:00",
+      "url": "https://www.digitimes.com/news/a20261006PD219/solidigm-taiwan-production-ssd-ai-server.html?dt_ref=tag"
+    },
+    {
+      "category": "hardware",
+      "title": "AMD 計畫 2027 年大幅增加晶片供應，AI 需求推升 CPU、GPU 與記憶體產能需求",
+      "summary": "AMD 執行長 Lisa Su 表示，公司計畫在 2027 年顯著提高晶片供應，並與 TSMC、Foxconn 以及 Samsung、SK Hynix 等供應鏈夥伴協調 CPU、GPU 晶圓與記憶體產能。AI 市場需求快速成長，使先進製程與記憶體供應成為擴產重點。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.reuters.com/world/asia-pacific/amd-plans-substantially-increase-supply-2027-ceo-says-2026-10-06/"
+    }
+  ],
+  "history": [
+    {
+      "category": "programming",
+      "title": "JDK 27 偏向漸進式更新，JDK 28 將迎來 Project Valhalla 重要進展",
+      "summary": "InfoWorld 分析指出，JDK 27 的多數變更較偏向現有預覽功能的延續與成熟化，而真正更具結構性影響的更新預計集中在 JDK 28。Project Valhalla 的進展尤其值得 Java 開發者追蹤，未來可能改變 value types 與資料布局等核心能力。",
+      "source": "InfoWorld",
+      "publishedAt": "2026-10-05",
+      "url": "https://www.infoworld.com/article/4229750/jdk-27-the-quiet-before-the-storm.html"
+    },
+    {
+      "category": "hardware",
       "title": "AMD 公布 Gorgon Halo AI 效能數據，Ryzen AI Max+ Pro 495 最高支援 192GB 統一記憶體",
       "summary": "AMD 在預期的 Nvidia RTX Spark 發表前公開 Gorgon Halo 系列的 AI 基準數據，旗艦 Ryzen AI Max+ Pro 495 可搭配最高 192GB 統一記憶體。AMD 強調大記憶體容量有利於本機執行更大型模型，但實際 token throughput 仍會隨模型與 context 長度明顯變動。",
       "source": "Tom's Hardware",
@@ -80,6 +114,5 @@
       "publishedAt": "2026-10-02",
       "url": "https://www.tomshardware.com/pc-components/hdds/toshiba-to-double-hdd-production-capacity-as-30tb-class-loom-65tb-100tb-drives-on-the-roadmap-for-2030-and-beyond"
     }
-  ],
-  "history": []
+  ]
 }
