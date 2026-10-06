@@ -1,0 +1,11 @@
+{
+  "updatedAt": "2026-10-06T20:20:00+08:00",
+  "generatedBy": "ChatGPT scheduled news curator",
+  "retentionDays": 7,
+  "categories": [
+    {"id":"programming","name":"程式語言新聞"},
+    {"id":"ai-llm","name":"AI 與開源 LLM 新聞"},
+    {"id":"hardware","name":"電腦硬體零組件新聞"}
+  ],
+  "items": []
+}
