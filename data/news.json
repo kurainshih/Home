@@ -1,11 +1,85 @@
 {
-  "updatedAt": "2026-10-06T20:20:00+08:00",
+  "updatedAt": "2026-10-06T20:42:00+08:00",
   "generatedBy": "ChatGPT scheduled news curator",
-  "retentionDays": 7,
+  "retentionDays": null,
   "categories": [
     {"id":"programming","name":"程式語言新聞"},
     {"id":"ai-llm","name":"AI 與開源 LLM 新聞"},
     {"id":"hardware","name":"電腦硬體零組件新聞"}
   ],
-  "items": []
+  "items": [
+    {
+      "category": "programming",
+      "title": "Java 生態本週更新：JobRunr 9、OpenXava 8、Quarkus、LangChain4j 與新語言伺服器 Lathe",
+      "summary": "InfoQ 本週 Java 彙整指出，JobRunr 9.0 與 OpenXava 8.0 正式發布，Quarkus、Micronaut、LangChain4j、Eclipse JNoSQL 與 Google ADK 也有更新；同時新 Java language server「Lathe」亮相。OpenJDK 的 JEP 544（Ahead-of-Time Code Compilation）也正朝 JDK 28 推進，值得關注未來 JVM 啟動與暖機效能。",
+      "source": "InfoQ",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.infoq.com/news/2026/10/java-news-roundup-sep28-2026/"
+    },
+    {
+      "category": "programming",
+      "title": "Microsoft Aspire 13.6 加入第一方 Java hosting 與持久化遙測",
+      "summary": "Aspire 13.6 新增 Java 與 Rust 的第一方 hosting 支援，並加入可持久保存的 dashboard telemetry、CLI 與 VS Code 工作流程改進。對以 Java 服務搭配雲端與可觀測性工具的團隊來說，這代表 Aspire 的跨語言整合範圍進一步擴大。",
+      "source": "TechGig",
+      "publishedAt": "2026-10-06T05:10:00+05:30",
+      "url": "https://techgig.com/news/ai/microsoft-aspire-13-6-adds-persistent-telemetry-java-and-rust-hosting/134720121"
+    },
+    {
+      "category": "programming",
+      "title": "JDK 27 偏向漸進式更新，JDK 28 將迎來 Project Valhalla 重要進展",
+      "summary": "InfoWorld 分析指出，JDK 27 的多數變更較偏向現有預覽功能的延續與成熟化，而真正更具結構性影響的更新預計集中在 JDK 28。Project Valhalla 的進展尤其值得 Java 開發者追蹤，未來可能改變 value types 與資料布局等核心能力。",
+      "source": "InfoWorld",
+      "publishedAt": "2026-10-05",
+      "url": "https://www.infoworld.com/article/4229750/jdk-27-the-quiet-before-the-storm.html"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Reflection AI 發表 open-weight 模型 Beam，主打低推論成本的推理與 Coding",
+      "summary": "Reflection AI 公布首款 frontier open-weight 模型 Beam，採 501B 總參數、每 token 啟用約 23B 的 MoE 架構，主打推理、程式開發與 agentic 任務。官方聲稱其在部分基準可接近領先中國開放模型，同時使用更少推論算力；權重與完整技術細節預計本月釋出。",
+      "source": "TechCrunch",
+      "publishedAt": "2026-10-05T12:33:00-07:00",
+      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Aleph Alpha 釋出 Apache 2.0 授權的 Kolibri 1 開放權重模型",
+      "summary": "Aleph Alpha 的 Kolibri 1 已於 10 月 3 日釋出，可在 Hugging Face 下載完整權重並採 Apache 2.0 授權。模型為 MoE 架構，總參數約 78.1B、每 token 啟用約 3.46B，現階段主要支援德文與英文。",
+      "source": "ActuIA",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.actuia.com/en/news/aleph-alphas-kolibri-what-the-apache-20-license-guarantees/"
+    },
+    {
+      "category": "ai-llm",
+      "title": "GitHub 推出 ReviewBench，專門評估 AI 程式碼審查代理",
+      "summary": "GitHub 的 ReviewBench 進入研究預覽，目標是衡量 AI code review 工具在軟體發布前找出問題的能力。這類基準有助於團隊比較不同 review agent，也能用來評估自建工具在真實程式碼審查情境中的表現。",
+      "source": "Help Net Security",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.helpnetsecurity.com/2026/10/06/github-reviewbench-ai-code-review-benchmark/"
+    },
+    {
+      "category": "hardware",
+      "title": "AMD 公布 Gorgon Halo AI 效能數據，Ryzen AI Max+ Pro 495 最高支援 192GB 統一記憶體",
+      "summary": "AMD 在預期的 Nvidia RTX Spark 發表前公開 Gorgon Halo 系列的 AI 基準數據，旗艦 Ryzen AI Max+ Pro 495 可搭配最高 192GB 統一記憶體。AMD 強調大記憶體容量有利於本機執行更大型模型，但實際 token throughput 仍會隨模型與 context 長度明顯變動。",
+      "source": "Tom's Hardware",
+      "publishedAt": "2026-10-05",
+      "url": "https://www.tomshardware.com/pc-components/cpus/amd-attempts-to-get-ahead-of-expected-rtx-spark-launch-with-gorgon-halo-ai-benchmarks-company-says-it-has-shipped-over-half-a-million-agentic-pcs-to-date"
+    },
+    {
+      "category": "hardware",
+      "title": "Steam 調查中 32GB RAM 首度超越 16GB，AMD CPU 佔比逼近 Intel",
+      "summary": "2026 年 9 月 Steam Hardware Survey 顯示，32GB 系統記憶體占比升至 42.22%，超越 16GB 的 37.82%，即使記憶體市場仍處於高價與供應吃緊狀態。AMD 在整體 CPU 佔比也升至 48.37%，與 Intel 的差距持續縮小。",
+      "source": "Tom's Hardware",
+      "publishedAt": "2026-10-05",
+      "url": "https://www.tomshardware.com/video-games/pc-gaming/32gb-ram-config-hits-top-spot-on-steam-survey-despite-memory-chip-shortage-amd-closing-in-on-intel-at-more-than-48-percent-share"
+    },
+    {
+      "category": "hardware",
+      "title": "Toshiba 計畫倍增近線 HDD 產能，為 30TB 級硬碟量產做準備",
+      "summary": "Toshiba 計畫在 2027 財年前將菲律賓近線 HDD 產能提高一倍，以因應 AI 與資料中心帶動的儲存需求。新產線將支援 30TB 級產品，後續路線圖還包含更高容量硬碟，顯示大容量機械硬碟市場仍受資料中心需求強力驅動。",
+      "source": "Tom's Hardware",
+      "publishedAt": "2026-10-02",
+      "url": "https://www.tomshardware.com/pc-components/hdds/toshiba-to-double-hdd-production-capacity-as-30tb-class-loom-65tb-100tb-drives-on-the-roadmap-for-2030-and-beyond"
+    }
+  ],
+  "history": []
 }

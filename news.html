@@ -11,13 +11,13 @@
 <body>
   <header class="top shell">
     <a class="brand" href="./index.html"><span>K</span><strong>Kurain Home</strong></a>
-    <nav><a href="./index.html">首頁</a><a class="active" href="./news.html">新聞</a></nav>
+    <nav><a href="./index.html">首頁</a><a class="active" href="./news.html">新聞</a><a href="./history.html">歷史新聞</a></nav>
   </header>
   <main class="shell">
     <section class="hero">
       <p class="eyebrow">CURATED TECH NEWS</p>
       <h1>每天只看<br><em>值得看的技術新聞。</em></h1>
-      <p>聚焦程式語言、AI 與開源 LLM、電腦硬體零組件。保留原始來源與時間，以繁體中文快速整理重點。</p>
+      <p>聚焦程式語言、AI 與開源 LLM、電腦硬體零組件。首頁只顯示當日內容，舊新聞永久保留於歷史新聞頁。</p>
       <div class="meta">最新更新：<strong id="updatedAt">讀取中…</strong> · <strong id="newsCount">0</strong> 則</div>
     </section>
     <section class="toolbar">
@@ -30,7 +30,7 @@
       <input id="search" type="search" placeholder="搜尋新聞…">
     </section>
     <section>
-      <div class="heading"><div><p class="eyebrow">LATEST STORIES</p><h2>最新技術新聞</h2></div><p id="resultMeta"></p></div>
+      <div class="heading"><div><p class="eyebrow">TODAY'S STORIES</p><h2>今日技術新聞</h2></div><p id="resultMeta"></p></div>
       <div id="newsGrid" class="grid"></div>
       <div id="empty" class="empty" hidden>目前沒有符合條件的新聞。</div>
       <div id="error" class="empty" hidden>新聞資料暫時無法載入。</div>
