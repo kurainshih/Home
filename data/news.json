@@ -1,20 +1,37 @@
 {
-  "updatedAt": "2026-10-06T20:42:00+08:00",
+  "updatedAt": "2026-10-06T20:57:00+08:00",
   "generatedBy": "ChatGPT scheduled news curator",
   "retentionDays": null,
   "categories": [
-    {"id":"programming","name":"程式語言新聞"},
-    {"id":"ai-llm","name":"AI 與開源 LLM 新聞"},
-    {"id":"hardware","name":"電腦硬體零組件新聞"}
+    {
+      "id": "programming",
+      "name": "程式語言新聞"
+    },
+    {
+      "id": "ai-llm",
+      "name": "AI 與開源 LLM 新聞"
+    },
+    {
+      "id": "hardware",
+      "name": "電腦硬體零組件新聞"
+    }
   ],
   "items": [
     {
-      "category": "programming",
-      "title": "Java 生態本週更新：JobRunr 9、OpenXava 8、Quarkus、LangChain4j 與新語言伺服器 Lathe",
-      "summary": "InfoQ 本週 Java 彙整指出，JobRunr 9.0 與 OpenXava 8.0 正式發布，Quarkus、Micronaut、LangChain4j、Eclipse JNoSQL 與 Google ADK 也有更新；同時新 Java language server「Lathe」亮相。OpenJDK 的 JEP 544（Ahead-of-Time Code Compilation）也正朝 JDK 28 推進，值得關注未來 JVM 啟動與暖機效能。",
-      "source": "InfoQ",
-      "publishedAt": "2026-10-06",
-      "url": "https://www.infoq.com/news/2026/10/java-news-roundup-sep28-2026/"
+      "category": "hardware",
+      "title": "Samsung 加強 HBM 散熱方案，因應 TSMC CoWoS 封裝持續放大",
+      "summary": "Samsung 正擴大 HBM 熱管理布局，除了記憶體堆疊本身，也開始因應更大型 AI 封裝的整體散熱需求。隨 TSMC CoWoS 尺寸與功耗持續提高，HBM 與先進封裝的熱設計已成為 AI 加速器供應鏈的重要瓶頸之一。",
+      "source": "DIGITIMES",
+      "publishedAt": "2026-10-06T12:15:00+08:00",
+      "url": "https://www.digitimes.com/news/a20261006VL210/samsung-hbm-cooling-tsmc-cowos.html?chid=10"
+    },
+    {
+      "category": "hardware",
+      "title": "Solidigm 擴大台灣 SSD 生產基地，搶攻 AI 伺服器供應鏈",
+      "summary": "Solidigm 正擴大台灣的生產布局，以強化資料中心 SSD 與 AI 伺服器供應能力。AI 基礎設施持續推升企業級 NAND 與高容量 SSD 需求，台灣供應鏈的重要性也隨之提高。",
+      "source": "DIGITIMES",
+      "publishedAt": "2026-10-06T11:57:00+08:00",
+      "url": "https://www.digitimes.com/news/a20261006PD219/solidigm-taiwan-production-ssd-ai-server.html?dt_ref=tag"
     },
     {
       "category": "programming",
@@ -26,19 +43,19 @@
     },
     {
       "category": "programming",
+      "title": "Java 生態本週更新：JobRunr 9、OpenXava 8、Quarkus、LangChain4j 與新語言伺服器 Lathe",
+      "summary": "InfoQ 本週 Java 彙整指出，JobRunr 9.0 與 OpenXava 8.0 正式發布，Quarkus、Micronaut、LangChain4j、Eclipse JNoSQL 與 Google ADK 也有更新；同時新 Java language server「Lathe」亮相。OpenJDK 的 JEP 544（Ahead-of-Time Code Compilation）也正朝 JDK 28 推進，值得關注未來 JVM 啟動與暖機效能。",
+      "source": "InfoQ",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.infoq.com/news/2026/10/java-news-roundup-sep28-2026/"
+    },
+    {
+      "category": "programming",
       "title": "JDK 28 的 JEP 542：PEM Encodings of Cryptographic Objects 正式 targeted",
       "summary": "OpenJDK 已將 JEP 542（PEM Encodings of Cryptographic Objects）target 到 JDK 28。這項功能旨在提供標準 API 來編碼與解碼常見密碼學物件的 PEM 格式，減少 Java 應用在憑證、金鑰與加密物件處理上依賴自製或第三方解析程式的需求。",
       "source": "Inside.java",
       "publishedAt": "2026-10-06",
       "url": "https://inside.java/2026/10/06/jep542-target-jdk28/"
-    },
-    {
-      "category": "ai-llm",
-      "title": "Reflection AI 發表 open-weight 模型 Beam，主打低推論成本的推理與 Coding",
-      "summary": "Reflection AI 公布首款 frontier open-weight 模型 Beam，採 501B 總參數、每 token 啟用約 23B 的 MoE 架構，主打推理、程式開發與 agentic 任務。官方聲稱其在部分基準可接近領先中國開放模型，同時使用更少推論算力；權重與完整技術細節預計本月釋出。",
-      "source": "TechCrunch",
-      "publishedAt": "2026-10-05T12:33:00-07:00",
-      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/"
     },
     {
       "category": "ai-llm",
@@ -58,27 +75,27 @@
     },
     {
       "category": "hardware",
-      "title": "Samsung 加強 HBM 散熱方案，因應 TSMC CoWoS 封裝持續放大",
-      "summary": "Samsung 正擴大 HBM 熱管理布局，除了記憶體堆疊本身，也開始因應更大型 AI 封裝的整體散熱需求。隨 TSMC CoWoS 尺寸與功耗持續提高，HBM 與先進封裝的熱設計已成為 AI 加速器供應鏈的重要瓶頸之一。",
-      "source": "DIGITIMES",
-      "publishedAt": "2026-10-06T12:15:00+08:00",
-      "url": "https://www.digitimes.com/news/a20261006VL210/samsung-hbm-cooling-tsmc-cowos.html?chid=10"
-    },
-    {
-      "category": "hardware",
-      "title": "Solidigm 擴大台灣 SSD 生產基地，搶攻 AI 伺服器供應鏈",
-      "summary": "Solidigm 正擴大台灣的生產布局，以強化資料中心 SSD 與 AI 伺服器供應能力。AI 基礎設施持續推升企業級 NAND 與高容量 SSD 需求，台灣供應鏈的重要性也隨之提高。",
-      "source": "DIGITIMES",
-      "publishedAt": "2026-10-06T11:57:00+08:00",
-      "url": "https://www.digitimes.com/news/a20261006PD219/solidigm-taiwan-production-ssd-ai-server.html?dt_ref=tag"
-    },
-    {
-      "category": "hardware",
       "title": "AMD 計畫 2027 年大幅增加晶片供應，AI 需求推升 CPU、GPU 與記憶體產能需求",
       "summary": "AMD 執行長 Lisa Su 表示，公司計畫在 2027 年顯著提高晶片供應，並與 TSMC、Foxconn 以及 Samsung、SK Hynix 等供應鏈夥伴協調 CPU、GPU 晶圓與記憶體產能。AI 市場需求快速成長，使先進製程與記憶體供應成為擴產重點。",
       "source": "Reuters",
       "publishedAt": "2026-10-06",
       "url": "https://www.reuters.com/world/asia-pacific/amd-plans-substantially-increase-supply-2027-ceo-says-2026-10-06/"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Mistral 預告新模型，稱在部分資安能力上超越中國競品",
+      "summary": "Mistral 執行長 Arthur Mensch 在 Abu Dhabi 的 AI Everything 大會表示，公司於 10 月 6 日發表的新模型在部分資安能力上優於中國模型，但當場未公布具體比較對象與評測方式。這顯示歐洲 AI 廠商持續以模型能力與技術自主性爭取企業與區域市場。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.reuters.com/world/china/mistral-ceo-says-new-ai-model-beats-chinese-ones-some-areas-2026-10-06/"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Reflection AI 發表 open-weight 模型 Beam，主打低推論成本的推理與 Coding",
+      "summary": "Reflection AI 公布首款 frontier open-weight 模型 Beam，採 501B 總參數、每 token 啟用約 23B 的 MoE 架構，主打推理、程式開發與 agentic 任務。官方聲稱其在部分基準可接近領先中國開放模型，同時使用更少推論算力；權重與完整技術細節預計本月釋出。",
+      "source": "TechCrunch",
+      "publishedAt": "2026-10-05T12:33:00-07:00",
+      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/"
     }
   ],
   "history": [
@@ -107,12 +124,84 @@
       "url": "https://www.tomshardware.com/video-games/pc-gaming/32gb-ram-config-hits-top-spot-on-steam-survey-despite-memory-chip-shortage-amd-closing-in-on-intel-at-more-than-48-percent-share"
     },
     {
+      "category": "programming",
+      "title": "JDK 28 讓 Arena.ofConfined() 小型原生記憶體配置大幅加速",
+      "summary": "Inside.java 說明 JDK 28 對 Foreign Function and Memory API 的 Arena.ofConfined() 加入可重用的小型 native-memory pool。既有程式碼不需修改即可受益，官方開發基準在 5 至 20 byte 小型配置上依平台顯示約 6.8 倍到 18.9 倍的延遲改善。",
+      "source": "Inside.java",
+      "publishedAt": "2026-10-05",
+      "url": "https://inside.java/2026/10/05/confined-pools/"
+    },
+    {
+      "category": "ai-llm",
+      "title": "AWS 推出開源 Strands Decider 2B，讓 AI Agent 用小模型快速做選擇",
+      "summary": "AWS Strands Decider 2B 是約 2B 參數的開源 decision model，設計目標是在代理工作流程中快速從預先定義的選項做決策，而非產生長文字。AWS 將它定位為可本機實驗、低成本且適合 agent hot path 的專用模型。",
+      "source": "AWS",
+      "publishedAt": "2026-10-05",
+      "url": "https://aws.amazon.com/blogs/aws/aws-weekly-roundup-amazon-bedrock-managed-agents-powered-by-openai-q3-service-availability-updates-kiro-workflows-and-more-october-5-2026/"
+    },
+    {
+      "category": "hardware",
+      "title": "AI 資料中心缺電可能衝擊記憶體與光通訊供應鏈，NVIDIA、Broadcom 相對抗壓",
+      "summary": "Morgan Stanley 指出，美國資料中心電力供應吃緊若延後 AI 部署，可能先壓抑記憶體、光通訊與其他次級晶片元件需求；NVIDIA 與 Broadcom 因產品位置與需求結構相對更能承受。這凸顯 AI 硬體瓶頸已從晶片本身延伸到電力與基礎設施。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-05",
+      "url": "https://www.reuters.com/business/nvidia-broadcom-shielded-ai-power-crunch-hits-chip-supply-chain-says-morgan-2026-10-05/"
+    },
+    {
       "category": "hardware",
       "title": "Toshiba 計畫倍增近線 HDD 產能，為 30TB 級硬碟量產做準備",
       "summary": "Toshiba 計畫在 2027 財年前將菲律賓近線 HDD 產能提高一倍，以因應 AI 與資料中心帶動的儲存需求。新產線將支援 30TB 級產品，後續路線圖還包含更高容量硬碟，顯示大容量機械硬碟市場仍受資料中心需求強力驅動。",
       "source": "Tom's Hardware",
       "publishedAt": "2026-10-02",
       "url": "https://www.tomshardware.com/pc-components/hdds/toshiba-to-double-hdd-production-capacity-as-30tb-class-loom-65tb-100tb-drives-on-the-roadmap-for-2030-and-beyond"
+    },
+    {
+      "category": "programming",
+      "title": "JDK 28 納入 JEP 540：Simple JSON API 進入 Incubator",
+      "summary": "JEP 540 已 target 到 JDK 28，將提供 JDK 內建的輕量 JSON API，用於解析、瀏覽與產生符合 RFC 8259 的 JSON 文件。這可讓部分應用在簡單 JSON 處理情境下不必額外引入 Jackson 或 Gson 等第三方依賴。",
+      "source": "OpenJDK",
+      "publishedAt": "2026-10-02",
+      "url": "https://openjdk.org/jeps/540"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Cloudflare 開源 Clef 與 Clef-flash decision models，主打代理決策低延遲",
+      "summary": "Cloudflare 發布 Clef 與 Clef-flash 兩個開源 decision model，可下載權重並透過 Workers AI 使用。這類模型不以長文生成為核心，而是針對代理系統中的分類、選擇與決策工作最佳化，並強調與 Jev API 相容及低延遲。",
+      "source": "Cloudflare",
+      "publishedAt": "2026-10-02",
+      "url": "https://blog.cloudflare.com/clef-decision-models/"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Ai2 開源 AstaBrief 8B，用較小模型產生帶引用的科學研究報告",
+      "summary": "Ai2 開源 AstaBrief 8B 與相關訓練資料，模型可把研究問題與檢索到的文獻片段整理成帶引用的科學報告。官方表示 Asta 的 Fast mode 平均約 51.1 秒完成報告，明顯快於其較重的 Thinking pipeline，並可由研究機構自行部署。",
+      "source": "Ai2",
+      "publishedAt": "2026-10-02",
+      "url": "https://allenai.org/blog/astabrief"
+    },
+    {
+      "category": "hardware",
+      "title": "Amazon 擬將約 80 億美元 NVIDIA 晶片資產轉售給投資人",
+      "summary": "Reuters 引述金融時報報導，Amazon 正研究透過特殊投資工具把約 80 億美元的 NVIDIA 先進晶片資產轉給外部投資人，以降低資產負擔並支撐持續擴張的 AI 基礎設施投資。這反映高階 GPU 已逐漸成為可被金融化的大型資本支出項目。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-02",
+      "url": "https://www.reuters.com/business/retail-consumer/amazon-seeks-offload-8-billion-nvidia-chips-investors-ft-reports-2026-10-02/"
+    },
+    {
+      "category": "programming",
+      "title": "Quarkus 4.0.0.Beta1 釋出，基準 Java 版本升至 21",
+      "summary": "Quarkus 4 首個 Beta 版已發布，主要基礎升級包含 Java 21、Netty 4.2 與 Vert.x 5.x，並持續強化 QUIC 等新一代網路能力。官方預計 11 月底推出正式版，並呼籲 extension 作者與使用者提前測試相容性。",
+      "source": "Quarkus",
+      "publishedAt": "2026-10-01",
+      "url": "https://quarkus.io/blog/quarkus-4-0-0-beta1-released/"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Ai2 釋出 Olmo-core 3，開放可擴展到兆參數 MoE 的訓練堆疊",
+      "summary": "Ai2 發表 Olmo-core 3，重新設計 mixture-of-experts 訓練架構並完整開源。官方在 8 張 NVIDIA B300 的初步測試中，47B MoE 的吞吐量相較舊版架構約提升 2.7 倍，並展示可擴展到兆參數級配置的能力。",
+      "source": "Ai2",
+      "publishedAt": "2026-10-01",
+      "url": "https://allenai.org/blog/olmocore3"
     }
   ]
 }
