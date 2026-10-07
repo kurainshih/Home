@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-07T08:03:28+08:00",
+  "updatedAt": "2026-10-07T17:27:34+08:00",
   "generatedBy": "ChatGPT scheduled news curator",
   "retentionDays": null,
   "categories": [
@@ -17,6 +17,22 @@
     }
   ],
   "items": [
+    {
+      "category": "programming",
+      "title": "SAP 說明 2030 年後 NetWeaver Java 支援限制，使用 Java 8／JEE5 的客戶需提前規劃",
+      "summary": "SAP 10 月 7 日說明，SAP Business Suite 7 延伸維護仍至 2030 年底，但與 SAP NetWeaver AS JAVA 7.5 搭配的 Java 8／JEE5 支援安排也將在 2030 年底結束。2031 年進入 customer-specific maintenance 後，SAP 將無法取代既有第三方 Java 支援與權利，相關客戶應提前規劃遷移路徑。",
+      "source": "SAP",
+      "publishedAt": "2026-10-07",
+      "url": "https://news.sap.com/2026/10/beyond-2030-sap-business-suite-7-sap-netweaver-customers-third-party-databases-java/"
+    },
+    {
+      "category": "hardware",
+      "title": "AMD 持續評估與 Samsung 的晶圓代工與記憶體合作，強化先進晶片供應鏈",
+      "summary": "AMD 執行長 Lisa Su 10 月 7 日表示，公司持續探索與 Samsung Electronics 在記憶體與晶圓代工方面的合作機會。對 CPU、GPU 與 AI 加速器供應鏈而言，這反映 AMD 正尋求更多先進製程與記憶體來源，以支撐未來幾年的供應擴張。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-07",
+      "url": "https://www.reuters.com/world/asia-pacific/amd-ceo-says-continues-explore-foundry-partnership-with-samsung-electronics-2026-10-07/"
+    },
     {
       "category": "ai-llm",
       "title": "Musubi 發布 open-weight PolicyLM-1.7B，主打即時內容政策判斷",
@@ -42,22 +58,6 @@
       "source": "DIGITIMES",
       "publishedAt": "2026-10-06T11:57:00+08:00",
       "url": "https://www.digitimes.com/news/a20261006PD219/solidigm-taiwan-production-ssd-ai-server.html?dt_ref=tag"
-    },
-    {
-      "category": "programming",
-      "title": "Microsoft Aspire 13.6 加入第一方 Java hosting 與持久化遙測",
-      "summary": "Aspire 13.6 新增 Java 與 Rust 的第一方 hosting 支援，並加入可持久保存的 dashboard telemetry、CLI 與 VS Code 工作流程改進。對以 Java 服務搭配雲端與可觀測性工具的團隊來說，這代表 Aspire 的跨語言整合範圍進一步擴大。",
-      "source": "TechGig",
-      "publishedAt": "2026-10-06T05:10:00+05:30",
-      "url": "https://techgig.com/news/ai/microsoft-aspire-13-6-adds-persistent-telemetry-java-and-rust-hosting/134720121"
-    },
-    {
-      "category": "ai-llm",
-      "title": "Reflection AI 發表 open-weight 模型 Beam，主打低推論成本的推理與 Coding",
-      "summary": "Reflection AI 公布首款 frontier open-weight 模型 Beam，採 501B 總參數、每 token 啟用約 23B 的 MoE 架構，主打推理、程式開發與 agentic 任務。官方聲稱其在部分基準可接近領先中國開放模型，同時使用更少推論算力；權重與完整技術細節預計本月釋出。",
-      "source": "TechCrunch",
-      "publishedAt": "2026-10-05T12:33:00-07:00",
-      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/"
     },
     {
       "category": "programming",
@@ -101,11 +101,11 @@
     },
     {
       "category": "ai-llm",
-      "title": "Mistral 預告新模型，稱在部分資安能力上超越中國競品",
-      "summary": "Mistral 執行長 Arthur Mensch 在 Abu Dhabi 的 AI Everything 大會表示，公司於 10 月 6 日發表的新模型在部分資安能力上優於中國模型，但當場未公布具體比較對象與評測方式。這顯示歐洲 AI 廠商持續以模型能力與技術自主性爭取企業與區域市場。",
-      "source": "Reuters",
+      "title": "Mistral 正式發布 Mistral Large 4 公開預覽，1T 參數、49B active parameters",
+      "summary": "Mistral 10 月 6 日正式推出 Mistral Large 4 公開預覽，模型為原生多模態、總參數 1 兆、每次推論啟用約 49B 參數，主打 coding、agentic workflows 與多模態理解。官方表示模型權重將在 10 月底釋出，現階段可先透過 Mistral Studio API 試用。",
+      "source": "Mistral",
       "publishedAt": "2026-10-06",
-      "url": "https://www.reuters.com/world/china/mistral-ceo-says-new-ai-model-beats-chinese-ones-some-areas-2026-10-06/"
+      "url": "https://mistral.ai/news/mistral-large-4/"
     },
     {
       "category": "programming",
@@ -138,6 +138,22 @@
       "source": "Reuters",
       "publishedAt": "2026-10-06",
       "url": "https://www.reuters.com/business/media-telecom/spacex-seeks-40-billion-buy-nvidia-chips-ft-reports-2026-10-06/"
+    },
+    {
+      "category": "programming",
+      "title": "Microsoft Aspire 13.6 加入第一方 Java hosting 與持久化遙測",
+      "summary": "Aspire 13.6 新增 Java 與 Rust 的第一方 hosting 支援，並加入可持久保存的 dashboard telemetry、CLI 與 VS Code 工作流程改進。對以 Java 服務搭配雲端與可觀測性工具的團隊來說，這代表 Aspire 的跨語言整合範圍進一步擴大。",
+      "source": "TechGig",
+      "publishedAt": "2026-10-06T05:10:00+05:30",
+      "url": "https://techgig.com/news/ai/microsoft-aspire-13-6-adds-persistent-telemetry-java-and-rust-hosting/134720121"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Reflection AI 發表 open-weight 模型 Beam，主打低推論成本的推理與 Coding",
+      "summary": "Reflection AI 公布首款 frontier open-weight 模型 Beam，採 501B 總參數、每 token 啟用約 23B 的 MoE 架構，主打推理、程式開發與 agentic 任務。官方聲稱其在部分基準可接近領先中國開放模型，同時使用更少推論算力；權重與完整技術細節預計本月釋出。",
+      "source": "TechCrunch",
+      "publishedAt": "2026-10-05T12:33:00-07:00",
+      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/"
     },
     {
       "category": "programming",
