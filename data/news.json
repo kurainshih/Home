@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-06T20:57:00+08:00",
+  "updatedAt": "2026-10-07T08:03:28+08:00",
   "generatedBy": "ChatGPT scheduled news curator",
   "retentionDays": null,
   "categories": [
@@ -17,6 +17,16 @@
     }
   ],
   "items": [
+    {
+      "category": "ai-llm",
+      "title": "Musubi 發布 open-weight PolicyLM-1.7B，主打即時內容政策判斷",
+      "summary": "Musubi 發布 1.7B 參數、開放權重的 PolicyLM-1.7B，讓平台直接輸入自然語言內容政策，並以低延遲對訊息進行分類判斷。TechCrunch 報導其目標是在約 50 毫秒內完成決策，且政策變更時不需重新訓練模型。",
+      "source": "TechCrunch",
+      "publishedAt": "2026-10-06T13:35:00-07:00",
+      "url": "https://techcrunch.com/2026/10/06/how-ai-decision-models-could-change-content-moderation/"
+    }
+  ],
+  "history": [
     {
       "category": "hardware",
       "title": "Samsung 加強 HBM 散熱方案，因應 TSMC CoWoS 封裝持續放大",
@@ -40,6 +50,14 @@
       "source": "TechGig",
       "publishedAt": "2026-10-06T05:10:00+05:30",
       "url": "https://techgig.com/news/ai/microsoft-aspire-13-6-adds-persistent-telemetry-java-and-rust-hosting/134720121"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Reflection AI 發表 open-weight 模型 Beam，主打低推論成本的推理與 Coding",
+      "summary": "Reflection AI 公布首款 frontier open-weight 模型 Beam，採 501B 總參數、每 token 啟用約 23B 的 MoE 架構，主打推理、程式開發與 agentic 任務。官方聲稱其在部分基準可接近領先中國開放模型，同時使用更少推論算力；權重與完整技術細節預計本月釋出。",
+      "source": "TechCrunch",
+      "publishedAt": "2026-10-05T12:33:00-07:00",
+      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/"
     },
     {
       "category": "programming",
@@ -90,15 +108,37 @@
       "url": "https://www.reuters.com/world/china/mistral-ceo-says-new-ai-model-beats-chinese-ones-some-areas-2026-10-06/"
     },
     {
+      "category": "programming",
+      "title": "Spring 本週更新聚焦 Spring Boot 4.x、Spring Security 與 Spring AI 模組化 RAG",
+      "summary": "Spring 官方 10 月 6 日週報整理近期生態動態，包含 Spring Boot 4.x、Spring Security，以及以 TypeSafe Jev 搭配 Spring AI 建構模組化 RAG 的實務內容。對 Java／Spring 開發者而言，這些更新反映 Spring 4.x 世代與 AI 整合持續推進。",
+      "source": "Spring",
+      "publishedAt": "2026-10-06",
+      "url": "https://spring.io/blog/2026/10/06/this-week-in-spring-october-6th-2026/"
+    },
+    {
       "category": "ai-llm",
-      "title": "Reflection AI 發表 open-weight 模型 Beam，主打低推論成本的推理與 Coding",
-      "summary": "Reflection AI 公布首款 frontier open-weight 模型 Beam，採 501B 總參數、每 token 啟用約 23B 的 MoE 架構，主打推理、程式開發與 agentic 任務。官方聲稱其在部分基準可接近領先中國開放模型，同時使用更少推論算力；權重與完整技術細節預計本月釋出。",
-      "source": "TechCrunch",
-      "publishedAt": "2026-10-05T12:33:00-07:00",
-      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/"
-    }
-  ],
-  "history": [
+      "title": "TII 推出 Falcon-Emirati 7B 與阿拉伯語語音、OCR 模型",
+      "summary": "阿布達比 Technology Innovation Institute 發布 Falcon-Emirati 7B，針對阿聯酋阿拉伯語的詞彙、表達與文化語境最佳化，並同步推出 Falcon-ASR 與 Falcon-OCR-Arabic。官方表示 Falcon-Emirati 在其阿聯酋方言基準取得 84.83%，強化 Falcon 開放模型在區域語言上的布局。",
+      "source": "Technology Innovation Institute",
+      "publishedAt": "2026-10-06",
+      "url": "https://falconllm-staging.tii.ae/tii-launches-falcon-emirati-alongside-new-arabic-ai-models-for-speech-and-visual-text-understanding.html"
+    },
+    {
+      "category": "hardware",
+      "title": "Samsung 記憶體需求推升獲利，但 DRAM／HBM 供應緊張仍將延續",
+      "summary": "Reuters 報導 Samsung 第三季獲利預估大幅成長，主要受 AI 與記憶體需求帶動；同時市場預期記憶體供應緊張可能延續至 2028。對 PC 與伺服器零組件市場而言，DRAM 與 HBM 的供需仍是價格與供應的重要變數。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.reuters.com/world/china/samsungs-q3-profit-seen-jumping-nine-fold-chip-margins-may-be-flat-2026-10-06/"
+    },
+    {
+      "category": "hardware",
+      "title": "SpaceX 擬籌資 400 億美元採購 NVIDIA GPU，AI 加速器需求維持高檔",
+      "summary": "Reuters 引述 Financial Times 報導，SpaceX 正尋求約 400 億美元融資以採購 NVIDIA 晶片，顯示大型 AI 基礎設施對高階 GPU 的資本需求仍持續放大。這類超大規模採購也會進一步影響 GPU、HBM 與相關伺服器零組件的供應配置。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-06",
+      "url": "https://www.reuters.com/business/media-telecom/spacex-seeks-40-billion-buy-nvidia-chips-ft-reports-2026-10-06/"
+    },
     {
       "category": "programming",
       "title": "JDK 27 偏向漸進式更新，JDK 28 將迎來 Project Valhalla 重要進展",
