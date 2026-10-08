@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-07T17:27:34+08:00",
+  "updatedAt": "2026-10-08T08:06:11+08:00",
   "generatedBy": "ChatGPT scheduled news curator",
   "retentionDays": null,
   "categories": [
@@ -18,6 +18,24 @@
   ],
   "items": [
     {
+      "category": "hardware",
+      "title": "Samsung Q3 營業利益年增近九倍，AI 記憶體需求推升 HBM／DRAM 景氣",
+      "summary": "Samsung 10 月 8 日公布第三季初步財測，營業利益估達 107.4 兆韓元，較去年同期接近九倍，並高於市場預期。Reuters 指出 AI 基礎設施需求持續推升 HBM、DRAM 與 NAND 價格，供需吃緊可能延續至 2027 年。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-07T22:48:00Z",
+      "url": "https://www.reuters.com/business/samsung-q3-profit-jumps-783-ai-memory-boom-lifts-chip-earnings-2026-10-07/"
+    }
+  ],
+  "history": [
+    {
+      "category": "hardware",
+      "title": "Microsoft 與 NVIDIA 推出 RTX Spark Windows AI PC，Surface Laptop Ultra 最高 128GB 統一記憶體",
+      "summary": "Microsoft 與 NVIDIA 發表以 RTX Spark 為核心的新一代 Windows AI PC，Surface Laptop Ultra 最高提供 20 核心處理器與 128GB 統一記憶體，並可在本機執行大型 AI 模型。Microsoft 同時強化 Windows 的本機／雲端混合 AI 與 agent containment，試圖把更多推論工作從雲端移到個人電腦。",
+      "source": "Reuters",
+      "publishedAt": "2026-10-07T10:05:00Z",
+      "url": "https://www.reuters.com/business/microsoft-nvidia-ceos-unveil-new-ai-laptop-san-francisco-event-2026-10-07/"
+    },
+    {
       "category": "programming",
       "title": "SAP 說明 2030 年後 NetWeaver Java 支援限制，使用 Java 8／JEE5 的客戶需提前規劃",
       "summary": "SAP 10 月 7 日說明，SAP Business Suite 7 延伸維護仍至 2030 年底，但與 SAP NetWeaver AS JAVA 7.5 搭配的 Java 8／JEE5 支援安排也將在 2030 年底結束。2031 年進入 customer-specific maintenance 後，SAP 將無法取代既有第三方 Java 支援與權利，相關客戶應提前規劃遷移路徑。",
@@ -35,14 +53,44 @@
     },
     {
       "category": "ai-llm",
+      "title": "Liquid AI 開源 d1-3B 與 d1-omni-600M，主打邊緣裝置即時多模態決策",
+      "summary": "Liquid AI 發布兩個 open-weight decision models：d1-3B 支援文字與影像，d1-omni-600M 則可處理文字搭配影像或音訊。官方測試中 d1-3B 在 Jetson AGX Thor 單題決策延遲約 16ms，定位在代理系統的低延遲分類、路由與決策工作。",
+      "source": "Liquid AI / Hugging Face",
+      "publishedAt": "2026-10-07",
+      "url": "https://huggingface.co/blog/LiquidAI/open-d1"
+    },
+    {
+      "category": "ai-llm",
+      "title": "NVIDIA 公開 Nemotron 3 奧賽專用模型、資料與推論流程，IOI／IMO 均達金牌門檻",
+      "summary": "NVIDIA 以 Nemotron 3 為基礎，透過 SFT、RL 與 generate-verify-refine 流程建立競賽專用模型；IOI 系統取得 535.4/600，IMO 系統取得 30/42。相關 checkpoints、訓練資料、benchmark 與推論流程已公開，提供可重現的 open-weight 專用模型微調案例。",
+      "source": "NVIDIA / Hugging Face",
+      "publishedAt": "2026-10-07",
+      "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026"
+    },
+    {
+      "category": "ai-llm",
+      "title": "Ai2 Bolmo byte-level 語言模型研究登上 Nature，並釋出更多開放 checkpoints",
+      "summary": "Ai2 宣布 Bolmo 的 byte-level 語言模型研究正式刊登於 Nature，並釋出可套用到更多模型家族的新 checkpoints 與 Stage 1 checkpoints。這套方法讓模型直接處理 bytes，降低固定 tokenizer 對拼字、罕見字串與特殊文字的限制。",
+      "source": "Ai2",
+      "publishedAt": "2026-10-07",
+      "url": "https://allenai.org/blog/bolmo-nature"
+    },
+    {
+      "category": "hardware",
+      "title": "Seagate 與 Toshiba 傳競購 TDK HDD 磁頭事業，牽動全球硬碟關鍵零組件供應",
+      "summary": "Tom's Hardware 引述 Bloomberg 報導，Seagate 與 Toshiba 正競逐 TDK 的 HDD 磁頭業務，交易金額可能達數十億美元。TDK 是全球唯一獨立 HDD 磁頭供應商，也是 Toshiba 的唯一來源，若交易成真可能改變 HAMR、MAMR 等次世代硬碟的供應與競爭格局。",
+      "source": "Tom's Hardware",
+      "publishedAt": "2026-10-07",
+      "url": "https://www.tomshardware.com/pc-components/hdds/seagate-and-toshiba-battle-for-tdks-hdd-head-business-a-critical-hard-drive-component-multi-billion-dollar-deal-threatens-sole-independent-supplier-as-shortages-intensify"
+    },
+    {
+      "category": "ai-llm",
       "title": "Musubi 發布 open-weight PolicyLM-1.7B，主打即時內容政策判斷",
       "summary": "Musubi 發布 1.7B 參數、開放權重的 PolicyLM-1.7B，讓平台直接輸入自然語言內容政策，並以低延遲對訊息進行分類判斷。TechCrunch 報導其目標是在約 50 毫秒內完成決策，且政策變更時不需重新訓練模型。",
       "source": "TechCrunch",
       "publishedAt": "2026-10-06T13:35:00-07:00",
       "url": "https://techcrunch.com/2026/10/06/how-ai-decision-models-could-change-content-moderation/"
-    }
-  ],
-  "history": [
+    },
     {
       "category": "hardware",
       "title": "Samsung 加強 HBM 散熱方案，因應 TSMC CoWoS 封裝持續放大",
@@ -122,14 +170,6 @@
       "source": "Technology Innovation Institute",
       "publishedAt": "2026-10-06",
       "url": "https://falconllm-staging.tii.ae/tii-launches-falcon-emirati-alongside-new-arabic-ai-models-for-speech-and-visual-text-understanding.html"
-    },
-    {
-      "category": "hardware",
-      "title": "Samsung 記憶體需求推升獲利，但 DRAM／HBM 供應緊張仍將延續",
-      "summary": "Reuters 報導 Samsung 第三季獲利預估大幅成長，主要受 AI 與記憶體需求帶動；同時市場預期記憶體供應緊張可能延續至 2028。對 PC 與伺服器零組件市場而言，DRAM 與 HBM 的供需仍是價格與供應的重要變數。",
-      "source": "Reuters",
-      "publishedAt": "2026-10-06",
-      "url": "https://www.reuters.com/world/china/samsungs-q3-profit-seen-jumping-nine-fold-chip-margins-may-be-flat-2026-10-06/"
     },
     {
       "category": "hardware",
