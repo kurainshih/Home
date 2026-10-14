@@ -1,38 +1,40 @@
-# Kurain Video v2.0 — Android / iOS / Rust 跨平台模組化、按需資源與安全差異更新完整開發規格書
+# Kurain Video v2.1 — Android / iOS / Windows / macOS × Rust 共用核心、模組化與安全更新完整 Codex 開發規格書
 
 > **交付對象**：Codex CLI / Codex IDE / 專案開發者  
-> **規格版本**：`2.0.0-replan.1`（新架構設計，非已完成功能）  
+> **規格版本**：`2.1.0-crossplatform-desktop.1`（四平台目標規格，不代表已實作）  
 > **日期**：2026-10-14  
 > **專案識別**：Kurain Video；Android Application ID `com.kurain.video`  
 > **既有基準**：`KurainVideo-現況產品規格書.md`（As-built v1.0）、`KurainVideo-v2.0-Android-iOS-Rust-Codex-SPEC.md`（先前跨平台方案）  
-> **最重要產品目標**：**常變的站點規則與資源獨立更新；不常變的原生程式留在安裝包；Android 自架 APK 在可證明安全時以差異檔節省流量；iOS 依 App Store 的機制發版。**  
+> **最重要產品目標**：**Android/Kotlin、iOS/SwiftUI、Windows/macOS/Tauri 共用 Rust 核心；站點規則與資源獨立更新；Android 自架 APK 在安全前提下差異更新；桌面原生 App 使用簽署更新，Windows 發佈 exe 安裝程式、macOS 發佈 app/dmg。**  
+
+> **四平台快速導讀**：第 0–17 章為既有 Android/iOS/Rust/安全更新全規格；第 18–29 章補充 Windows、macOS、Tauri 2、MPV、EXE/DMG 打包、桌面簽署更新與 Phase 10–14。若同一規範衝突，以更具體的平台章節及安全/法律限制為準。
 > **規格辨識**：`[現況]` 表示來自提供之 As-built 文件；`[新規格]` 表示本次設計；`[待查]` 表示必須由 Codex 在實際 repo／發布環境核對。
 
 ---
 
 ## 文件使用方法與完整交付定義
 
-本文件可作為唯一的 **v2.0 開發主規格**，不需先完整閱讀舊版 v2.0 才能理解；但 Codex 必須閱讀現況規格及原始碼以核對現況。原規格沒有交代 iOS Bundle ID、最低 iOS 版本、正式發佈憑證、更新主機 HTTPS、部署型態及目標 NAS 環境的部分，本文件以明確的預設設計／阻擋條件處理，不把假設當已完成事實。
+本文件可作為唯一的 **v2.1 四平台開發主規格**。第 0–17 章保留原 Android/iOS/Rust/更新設計，**第 18–29 章是 Windows/macOS 擴充且同等具約束力**；不需先完整閱讀舊版 v2.0 才能理解；但 Codex 必須閱讀現況規格及原始碼以核對現況。原規格沒有交代 iOS Bundle ID、最低 iOS 版本、正式發佈憑證、更新主機 HTTPS、部署型態及目標 NAS 環境的部分，本文件以明確的預設設計／阻擋條件處理，不把假設當已完成事實。
 
-**交付範圍**：Android 原功能不回歸、Rust 共用核心與 UniFFI、SwiftUI iOS App MVP、宣告式站點資料包管理、靜態可部署更新服務契約、Android 自架完整／差異 APK 更新、可驗證下載與回滾、平台發佈渠道隔離、測試與 CI、發布運維手冊。
+**交付範圍**：Android 原功能不回歸、Rust 共用核心與 UniFFI、SwiftUI iOS App MVP、**Tauri 2/React Desktop Windows `.exe` 與 macOS `.app/.dmg`**、宣告式站點資料包管理、靜態可部署更新服務契約、Android 自架完整／差異 APK 更新、**桌面簽署原生更新**、可驗證下載與回滾、五發布渠道隔離、測試與 CI、發布運維手冊。
 
 **不做**：遠端下發可執行 Rust `.so` / Kotlin `.dex` / Swift binary / 可執行 Script 插件、DRM 解除、繞過登入／驗證碼／存取限制、替換 iOS 原生 App、無權利來源的下載擷取。
 
 ## 0. Codex 最高優先級實作指令
 
 1. **Phase 0 先盤點，永不假設規格就是程式現況**。針對既有 Android 1.4.0 (118) 建立 baseline：UI 五分頁、Media3、WebView 偵測、網站套件、遠端協定、下載、更新與持久資料；如果 Gradle 版本不同，以實際 repo 為準並記錄。
-2. **保留現有 Android 專案根目錄及 `app/`**，禁止直接將 App 重新建構為新模板、刪除既有功能、改 package ID、重置簽章或丟失下載索引。新增 `rust/`、`ios/`、`shared/`、`tools/`、`distribution/` 與文件目錄即可。
+2. **保留現有 Android 專案根目錄及 `app/`**，禁止直接將 App 重新建構為新模板、刪除既有功能、改 package ID、重置簽章或丟失下載索引。新增 `rust/`、`ios/`、**`desktop/`**、`shared/`、`tools/`、`distribution/` 與文件目錄即可。
 3. **架構模組化 != 安裝分包 != 差異更新**。三個機制各有不同交付方式與驗收；不能只增加 Gradle modules 就宣稱已能部分更新。
 4. **原生程式固定隨 App 更新**：Kotlin、Swift、Rust compiled library、播放器 codec、授權實作、原生下載服務、更新器本身都不可由通用站點資料包替換。Android sideload 的差異檔必須重建完整已簽名 APK，再由系統安裝器更新。
 5. **站點下載包僅允許宣告式資料及靜態資源**：可調 URL 模板、受限 CSS selector、分類、顯示 metadata、固定能力允許表。不下載執行 JS、Lua、Wasm、DEX、`.so`、遠端 expression/eval；現有 WebView 偵測 JS 作為安裝包內程式資產，更新它需要 App 發版。
-6. **發佈渠道不可混用**：`androidSideload` 用自家 HTTPS catalog + APK/patched APK；`androidPlay` 只能使用 Google Play 更新／Play Feature Delivery；`iosAppStore` 只能使用 App Store／受許可的 Background Assets 與資料包。
+6. **發佈渠道不可混用**：`androidSideload` 用自家 HTTPS catalog + APK/patched APK；`androidPlay` 由 Play 更新／Feature Delivery；`iosAppStore` 由 App Store 更新；**`windowsDirect` 是 signed Tauri/NSIS exe，`macosDirect` 是 signed/notarized `.app/.dmg`**；所有渠道共用經簽署的資料包 catalog，但不可熱更新執行程式碼。詳細要求見第 18–29 章。
 7. **iOS App Store 構建必須採發佈時 allowlist，嚴格排除未授權或不符審核要求的來源；遠端資料包不能繞過此限制**。iOS 以 SwiftUI + WKWebView + AVPlayer，Android 保留 Views/XML + WebView + Media3。
 8. **安全優先**：現況 APK 更新來源預設為 `http://nas.kurain.uk:8080`，必須規劃 HTTPS 遷移、可信簽章 metadata、檔案 SHA-256、回滾保護。不得對既有 HTTP 主機「原地啟用差異檔」當作安全上線。
 9. **先 baseline 然後小範圍切換**。所有可替換 Android 功能新增 runtime feature flag；原 Kotlin 實作先保持可恢復；每次切換一個代表性站點／協定流程，並有 parity 測試。
 10. **不能假裝完成**：無 macOS/Xcode、實體 iPhone、發佈憑證、NAS、簽章 key 或測試伺服器時標記 `BLOCKED_ENV`；有 mocked test 不代表 E2E 成功。
 11. 每完成一階段交付 **程式碼、測試、執行命令、結果、風險、rollback 方式**；不得用 TODO stub 充當已完成功能。不要擅自 commit 或 push（除非操作環境明確授權），禁止在日誌洩漏 Token/Cookie/SSH password。
 12. 不盲目修改舊下載與播放快取；資料遷移必須冪等、原子、可回退，包含中斷／磁碟不足／系統殺死的情境。
-13. **開發優先序**：`P0` 保住 Android + Rust vertical slice + 宣告式資料包 + 安全更新基礎；`P1` iOS MVP + Android 差異更新正式上線 + 更多站點；`P2` 大型按需資產、Play Feature Delivery 與進階協定。此順序以後文 Phase Gate 為準。
+13. **開發優先序**：`P0` 保住 Android + Rust vertical slice + 宣告式資料包 + 安全更新基礎，**並在 Core 可用後驗證桌面 Phase 10/11**；`P1` iOS MVP + Android 差異更新 + Desktop 進階功能、Win EXE/mac DMG 發布；`P2` 大型資產與進階協定。總階段為 **Phase 0–14**。
 14. 若任何需求互相矛盾，優先 **資料安全 > 發布政策 > Android backward compatibility > 測試可重現 > 效能／下載節省**，在 `docs/cross-platform/DECISIONS.md` 留下 ADR。
 
 **建議 Codex 每回合只執行一個 Phase**；但一個 Phase 內的程式碼、測試與報告需完整交付，不能只吐回計畫。
@@ -62,13 +64,14 @@
 
 ### 1.2 v2.0 要達到的產品狀態
 
-- 同一套 **Rust Shared Core** 可供 Kotlin Android 與 Swift iOS 呼叫。
+- 同一套 **Rust Shared Core** 可供 Kotlin Android 與 Swift iOS 透過 UniFFI 呼叫，且 Windows/macOS Tauri Rust Host 直接依賴同一組 crates。
 - Android 不失去現有五分頁、播放器、下載、遠端、網頁與套件管理功能。
 - iOS 提供同一產品概念的五個導覽入口：**本地、網頁、套件、下載、設定**。各頁功能依平台能力與來源授權顯示，不假裝全部平台完全等價。
 - 把站點解析、媒體描述資料、統一錯誤、重試策略、部分 HTTP/遠端協定處理逐步集中於 Rust。
 - UI、WebView／WKWebView、播放引擎、系統權限、Secure Storage、背景任務由各平台負責。
 - Android/iOS 接收到同樣的核心錯誤碼、媒體來源類型與來源解析結果，能在各自播放器做合理決策。
 - iOS 第一個可驗收版本：**本機媒體選取、HTTP Progressive/HLS 播放、播放歷史、基本網站瀏覽與可取得的合法來源解析、HTTP(S)/WebDAV 遠端瀏覽、一般檔案下載**。
+- Windows/macOS 桌面 App 使用 **Tauri 2 + React/TypeScript + Rust Core**；Windows 提供 NSIS `setup.exe`，macOS 提供 `.app/.dmg`，播放由可驗收且合法再發佈的 DesktopPlayerEngine 管理，詳細規格見第 18–29 章。
 
 ### 1.3 非目標（本次不可暗中加入）
 
@@ -80,6 +83,7 @@
 - 不將 APK 更新模式移植到 App Store iOS App。
 - 不把各類磁力、YouTube 專用下載、成人站點預設加入 iOS 發布版本。
 - 本次不建立雲端帳號同步、後端 API 服務或跨設備同步資料庫。
+- 不將 iOS AVPlayer/Android Media3 當成桌面原生播放器；不保證桌面 MPV 是單一 exe 無 sidecar，也不在第一版引入 Linux。
 
 ### 1.4 優先級
 
@@ -260,16 +264,16 @@
 - `Distribution` 只提供可審核的 artifacts；下載後與 App 的信任根隔離；更新時不得匯入任意動態程式。
 - `Updater` 應部署在 *Android sideload native 層*；Rust 可共用 manifest 校驗與 patch bytes 產生驗證，但安裝動作只在 Android 系統安裝器執行。
 
-### 2.5 三種發布渠道的能力矩陣
+### 2.5 發布渠道能力矩陣（Android/iOS 既有三渠道 + 桌面兩渠道）
 
-| 功能 | Android 自架 | Android Play | iOS App Store |
-|---|---|---|---|
-| 原生程式更新 | 自架完整 APK 或差異重建 APK | Play In-App Updates / 商店機制 | App Store / TestFlight |
-| 平台按需原生功能 | 不假設有 Play Dynamic Feature；本版不自建 dex loader | 可選 Play Feature Delivery | 不允許一般原生程式碼熱替換 |
-| JSON/圖片資料包 | 自架 HTTPS | 自架 HTTPS，遵守 Play 政策 | 自架 HTTPS，遵守 App Review |
-| 大型純資源包 | 自架 HTTPS | 視內容可用 Play Asset Delivery | 可研究 Background Assets |
-| 更新失敗處理 | 退回 full APK / 舊 App 不變 | 平台恢復 | 平台恢復 |
-| 站點來源 | 依合法授權與政策 | 依 Play 渠道審核 | 編譯時嚴格 allowlist |
+| 功能 | Android 自架 | Android Play | iOS App Store | Windows Direct | macOS Direct |
+|---|---|---|---|---|---|
+| 原生程式更新 | signed APK/full/delta | Play 機制 | App Store | Tauri signed updater / NSIS | Tauri signed updater / signed + notarized app |
+| 按需原生功能 | 不做 dex loader | 可研究 Play Feature Delivery | 不做 native hot swap | 原生整包安全更新 | 原生整包安全更新 |
+| JSON/圖片資料包 | 自架 signed HTTPS | 自架 signed HTTPS + Play policy | 自架 signed HTTPS + Apple policy | 自架 signed HTTPS | 自架 signed HTTPS |
+| 大型純資源 | 自架 CDN | 可研究 Play Asset Delivery | 可研究 Background Assets | 自架 CDN | 自架 CDN |
+| 更新失敗 | fallback full APK | 平台復原 | 平台復原 | signed reinstall / safe recovery | signed reinstall / safe recovery |
+| 站點來源 | 合法與授權 | Play allowlist | iOS 編譯 allowlist | desktop allowlist | desktop allowlist |
 
 官方規則查驗：Android Play Feature Delivery 只能透過 Play/App Bundle 隨選交付；Google Play 禁止以非 Play 機制更新 App 本體或下載外部 dex/JAR/so；Apple App Review 2.5.2 對下載改變功能的程式碼有限制，5.2.3 對未經授權的第三方影音下載有限制。詳見第 16 章來源 URL。
 
@@ -1350,7 +1354,7 @@ Internet / web pages / public CDN (untrusted)
 | 任何 | 篡改/過期 catalog | 任意 | 不覆寫 active，不當成功 |
 | Android sideload split APK | full manifest 提供 universal APK | 任意 | 不可誤 patch 單 base APK |
 
-## 11. Codex 分階段執行計畫（重新整合後，以此為準）
+## 11. Codex 分階段執行計畫（原 Phase 0–9，桌面 Phase 10–14 見第 28 章）
 
 ### 階段規則
 
@@ -1523,7 +1527,8 @@ KurainVideo/
 │   ├── MIGRATION.md
 │   ├── TEST-MATRIX.md
 │   └── PHASE-00-REPORT.md ... PHASE-09-REPORT.md
-└── KurainVideo-v2.0-CODEX-SPEC.md       # 本規格放在根目錄
+├── desktop/                            # Tauri2/React TS/MPV Adapter（完整結構見 26.1）
+└── KurainVideo-v2.1-CODEX-SPEC.md       # 本規格放在根目錄
 ```
 
 不要把目前 Android 專案強制移到 `android/`，除非完成遷移理由／全 build parity／回滾方案並明確另行批准。
@@ -1552,7 +1557,7 @@ xcodebuild -list -project ios/KurainVideo.xcodeproj
 
 **注意**：範例指令中 Android task 名與新 tools 參數是預定 CLI 契約，Codex 應實作相對應指令並依實際 Gradle configuration 產生可運行版本。無正式 key 時只可用測試公私鑰進行本地測試，測試私鑰不得被 App release 信任。
 
-### 12.3 CI workflow
+### 12.3 CI workflow（桌面 Windows/mac CI 增項見第 26.3 章）
 
 - `rust-checks`: fmt, clippy, test, schema/FFI tests, fuzz nightly optional。
 - `android-regression`: 現有 unit/instrumentation（有 emulator 時）、sideload/play build flavors、Play build 靜態掃描不得包含 sideload updater。
@@ -1716,7 +1721,7 @@ SMB/SFTP 或磁力功能明確標示未支援，不要虛報已完成。
 
 Ed25519 封裝方式、`bsdiff-v1`、patch 70% 判斷門檻、包大小上限、schema 範例、catalog TTL、下載併發、保存上一版、目錄命名與 issue 分配，全部是**本次建議設計**，可由 Codex 透過 ADR 在實測與安全條件下調整。不要把示意 URL/Hash/版本當實際已部署 API。
 
-## 17. 最終總驗收 Checklist
+## 17. 原 Android/iOS 總驗收 Checklist（桌面擴充見第 29 章）
 
 ### A. 架構與 Android 保護
 
@@ -1765,5 +1770,615 @@ Ed25519 封裝方式、`bsdiff-v1`、patch 70% 判斷門檻、包大小上限、
 
 ---
 
-**文件總結**：Kurain Video v2.0 的真正模組化，是把 Kotlin/Swift/Rust 原生能力穩定地放在各自的 App release，把合法且可宣告式表達的站點規則/資料放在獨立安全包裡，把 Android 自架 APK 的原生更新改成「可驗證差異下載→本機重建完整已簽 APK→系統安裝」，並把 Play 與 iOS 發布完全隔離。任何一層更新失敗，都不能犧牲原有播放器、下載歷史與個人設定。**
+**第一部分總結**：Android/iOS 規格完整保留；請繼續閱讀第二部分（第 18–29 章），包含新增 Windows/macOS 交付標準、Tauri/Rust/React 架構、播放器、安裝器、更新、CI 與 Codex Phase 10–14。
 
+---
+
+# Part II — Windows / macOS 桌面版完整新增規格（v2.1，與前述 0–17 章共同生效）
+
+> **本 Part II 為 v2.1 新增需求**，不得取代前述 Android 1.4.0 保護、iOS 原生限制、Rust 共用核心、安全資料包、更新信任根與 Phase 0–9。前文只提及 Android/iOS 的三個交付 channel，現在擴展為五個：`androidSideload`、`androidPlay`、`iosAppStore`、`windowsDirect`、`macosDirect`；商店版與未來 Linux 不列入本次桌面最低完成範圍。**本章的 Windows/macOS 都是新開發目標，不是 As-built 已實作功能。**
+
+## 18. 產品目標、平台矩陣與交付定義
+
+### 18.1 使用者故事與非目標
+
+- **桌面一套程式邏輯**：Windows/macOS 使用同一份 React + TypeScript 桌面 UI 與 Tauri 2 host，直接連結既有 `rust/crates/*`，Android/iOS 不強迫改用 Tauri。
+- **Windows 安裝並執行**：使用者下載 `KurainVideo_<version>_x64-setup.exe`，執行安裝、建立開始功能表入口、開啟 `KurainVideo.exe`。另提供 `portable.zip`（可選，必須完整包含執行檔與依賴）；不可把「一個 exe」誤解為保證所有 codec/DLL 都是單一檔案。
+- **macOS 安裝並執行**：使用者下載 `KurainVideo_<version>_arm64.dmg` 或 `x64.dmg`，將 `KurainVideo.app` 拖到 Applications，正常通過 Gatekeeper。`.app` 是實際可執行包；`.dmg` 是發佈載體。
+- **桌面五個主入口**：本地、網頁、套件、下載、設定；播放器使用獨立播放視窗或獨立工作區（MVP 可用獨立原生播放視窗）。
+- **影片來源**：本機媒體、直接 HTTP(S)/HLS/DASH/RTSP、可合法取得的網站來源、HTTP/WebDAV 遠端，SFTP/SMB/FTP 依真實環境驗收逐步開啟。
+- **可獨立更新**：站點宣告式 JSON、圖片等資料包跨四平台共用；新桌面程式碼（Tauri host、Rust crate、播放器 binary）必須走經簽章的完整 App 更新，不能混成資料包熱更新。
+- **不追求未驗證的「完全相同功能」**：Safari/WKWebView vs WebView2、mac sandbox、Windows 檔案路徑、影音授權與網站 API 行為不同，UI 提供 capabilities 與明確降級。
+- **非目標**：Linux（未來預留）、瀏覽器 extension、DRM 破解、反爬繞過、全平台同步帳號伺服器、遠端可執行 JS/Lua/Wasm/原生動態庫、未授權串流下載、未經實測的無縫內嵌影片畫面。
+
+### 18.2 支援矩陣（MVP 與後續）
+
+| 項目 | Windows Desktop | macOS Desktop | Android 現況 | iOS 規劃 |
+|---|---|---|---|---|
+| 技術棧 | Tauri 2, React TS, Rust | Tauri 2, React TS, Rust | Kotlin Views/XML + Media3 | SwiftUI + AVPlayer |
+| 第一版建議 OS | Windows 10/11 x64，ARM64 後驗證 | macOS 13+ Apple Silicon，Intel x64 有 runner 時支援 | minSdk 24，保留既有 | iOS 16+ 暫定 |
+| 安裝與交付 | NSIS setup.exe，選用 portable.zip／MSI | 已簽 `.app` / `.dmg` | APK／Play | App Store / TestFlight |
+| 本機檔案/資料夾 | P0 | P0 | 已有 | P1 |
+| HTTP MP4/HLS | P0 | P0 | 已有 | P1 |
+| DASH / RTSP | MPV 適配器實測後 P1 | MPV 適配器實測後 P1 | 已有（設備依賴） | 不保證 |
+| 網頁來源偵測 | WebView2 可觀測範圍，P1 | WKWebView 可觀測範圍，P1 | 既有 WebView | WKWebView MVP |
+| 宣告式站點資料包 | 共用 Rust，P1 | 共用 Rust，P1 | 遷移後 | 依發布政策 |
+| HTTP/WebDAV 遠端 | P1 | P1 | 已有部分測試 | P1 |
+| SMB/FTP/SFTP 遠端 | P2 真實 NAS 測試 | P2 真實 NAS 測試 | 已有，部分 E2E 待驗收 | P2 / 條件式 |
+| 背景下載 | Rust 工作排程 + OS 整合 P1 | Rust 工作排程 + OS 整合 P1 | Media3 既有 | URLSession / AVAssetDownload |
+| 原生程式更新 | Tauri signed updater P1 | Tauri signed updater + codesign/notarization P1 | Sideload patch 或 Play | App Store |
+| 資料包獨立更新 | signed catalog | signed catalog | signed catalog | signed catalog + allowlist |
+
+第一版 `Windows 10/11 x64` 與 `macOS 13+ arm64` 是本規格建議的**驗收基線而非經官方/實機已確認最低需求**。Phase 10 應依依賴、編譯與測試修正。只具 Windows runner 而沒有 Mac runner 時，macOS 必須標記 `BLOCKED_ENV`，不可宣稱 macOS 已驗收。
+
+### 18.3 必備基本體驗
+
+1. 本機媒體庫首啟提示選擇資料夾，掃描在 Rust 背景 worker 運作，支援搜尋/排序/縮圖/資料夾導航，後續可手動新增或取消監控資料夾。
+2. 拖曳檔案或影音網址進主視窗加入播放/下載待處理清單，支援從 Windows 檔案總管 / macOS Finder「開啟方式」接收合法媒體。
+3. 影片清單支援清單/網格、右鍵選單、快捷鍵、續播、播放歷史、最近資料夾，未獲授權的路徑不自動刪除。
+4. 來源套件支援啟用/停用、版本、來源權限提示、單站點資料包更新與回滾；不可在使用者不知情的情況下下載超大資源。
+5. 下載管理至少支援加入/暫停/恢復/取消/失敗重試、來源超時提示、進度（僅在可計算時顯示 %）、目標目錄、磁碟不足處理。
+6. 主程式更新顯示版本、簽章驗證結果、下載大小、安裝所需的重啟；不要像「規則套件更新」那樣顯示為免重啟。
+
+## 19. 桌面技術架構、程式依賴與禁止事項
+
+### 19.1 主選型（須落 ADR）
+
+- **桌面 Shell**：Tauri **v2**（鎖定 Phase 10 實測確定的精確 stable 版本，不寫萬年 `*`）。Windows 後端 WebView2，macOS 後端 WKWebView；同一 React 18+/TypeScript/Vite 原始碼（依穩定相容版本鎖定）。
+- **Rust 複用**：`desktop/src-tauri` 新增一個 `kurain-desktop` Tauri crate，直接依賴 `kurain-core`、`kurain-parser`、`kurain-sources`、`kurain-network`、`kurain-remote`、`kurain-download`、`kurain-package`、`kurain-update-protocol`。**Desktop 不需要呼叫 Android/iOS 的 UniFFI**，避免 Rust → FFI → Rust 的多餘轉接。
+- **UI 通訊**：前端只能經由經 allowlist 的 Tauri Commands/Events 呼叫 host；Tauri host 統一驗證參數與授權後轉呼叫 Rust Domain Services。限制每個 command 可操作的路徑、站點、權限。
+- **播放後端**：桌面 P0/P1 使用 `DesktopPlayerEngine` 介面，先實作 `MpvSidecarEngine`（可行性 Spike 驗證後才標 DONE）；後續在適當 native video surface 上使用 `libmpv`/render API 取代 sidecar 是 P2，不應在第一版就假設影片畫面可完美嵌入 Tauri WebView DOM。
+- **下載**：共用 Rust 狀態機、持久佇列/metadata；桌面由 process 內 worker 進行可恢復下載；不是 Android DownloadService，也不能依賴 iOS URLSession 背景語義。
+- **儲存**：桌面 SQLite（schema migration）存歷史、站點設定、任務狀態，站點包落在 app data 下；Windows DPAPI/Credential Manager / macOS Keychain 儲存密碼與 token，經 platform adapter，不把明文帳密寫在 SQLite 或 log。
+- **本機檔案系統**：OS file dialogs / scoped dirs，必要路徑正規化與 symlink 防護；有本機選取記錄並避免 path traversal，禁止前端任意訪問整個磁碟。
+
+### 19.2 進程和信任邊界
+
+```text
+Windows: KurainVideo.exe  ────┐
+                               ├─ Tauri 2 Host (Rust command dispatcher)
+macOS: KurainVideo.app  ──────┘             │
+                                           ├─ Rust Workspace shared crates
+                React + TypeScript  ◄──────┤  (parser, remote, downloads,
+                desktop UI/WebView          │   catalog verification, history)
+                                           │
+                                           ├─ SQLite + per-OS keychain adapter
+                                           │
+                                           ├─ signed declarative site data packs
+                                           │
+                                           └─ DesktopPlayerEngine
+                                                    │
+                                                    ├─ MpvSidecarEngine (MVP)
+                                                    └─ libmpv engine (P2 / proven)
+
+Untrusted remote websites → isolated webview/browser context → sanitized
+MediaCandidate → trusted Tauri host → Rust parser → PlayerEngine
+NO untrusted website → arbitrary Tauri invoke, filesystem, shell.
+```
+
+Tauri WebView2/WKWebView 是應用程式的 UI/網頁呈現層，**不應當成萬能解碼器**。網站播放、HLS、DASH、RTSP 的端到端能力以實際 MPV backend 和來源驗收為準。
+
+### 19.3 React/TypeScript 桌面可重用元件與 Rust API
+
+- `UI Shell`: Navbar, Sidebar, Toolbar, Dialog, Toast, Table, Grid, Tab, Theme, Responsive Layout, i18n（首發繁體中文，保留英文字串鍵）。
+- `Domain TS contracts`: 從 `shared/schemas` 產生 TS types，不能手動維護第二套不一致的 schema；Rust→TS bridge 使用已測試 generator 或可驗證 JSON Schema。
+- `Rust commands` 強制：`list_local_media`, `select_media_dirs`, `get_playback_history`, `open_media`, `set_playback_position`, `get_sources`, `fetch_site_catalog`, `list_packages`, `install_data_package`, `list_remote_endpoints`, `list_remote_dir`, `test_remote_endpoint`, `get_download_jobs`, `enqueue_download`, `pause_download`, `resume_download`, `cancel_download`, `check_app_update`, `install_app_update`。
+- 每個 command 有: `requestId`、對應 DTO（部分操作需 `idempotencyKey`）、狀態錯誤碼、取消能力、不得讓 UI 直接持有 secrets；播放器/下載/更新的狀態使用有序 events + 初始 snapshot，UI 視圖刷新不得產生重複任務。
+- 前端不能使用 Node.js API 直接呼叫磁碟或啟動 shell；若需 OS 服務，由最小權限 Tauri plugin / Rust command 執行。
+
+### 19.4 核心 DTO 與序列化示例（契約定義）
+
+```json
+{
+  "sourceId": "local:example-file-id",
+  "displayName": "Example.mp4",
+  "sourceKind": "LOCAL_FILE",
+  "uri": "kurain-file://media/opaque-id",
+  "containerHint": "mp4",
+  "headersRef": null,
+  "resumeMs": 183000,
+  "capabilities": {"seek": true, "download": false},
+  "policy": {"legalRightVerified": true, "platformAllowed": true}
+}
+```
+
+**強制**：使用 opaque IDs 而不是讓 React 隨意傳絕對 path / storage credentials；`headersRef` 僅為主機內的短效 credential handle，不能將 Cookie/Token 加入 URL query 或 IPC log。DTO 中 `legalRightVerified` 不能由網站任意自行聲稱，必須由來源權利政策及使用者允許條件判斷。版本化欄位應以現有 `kurain-core` 契約為單一真相，以上 JSON 是建議新增欄位示例，不能無檢查地覆蓋已有模型。
+
+## 20. 桌面 UI／頁面／操作細節
+
+### 20.1 Windows / macOS 主畫面布局
+
+```text
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Kurain Video      [搜尋影片、網站、套件]           [下載狀態] [主題] [設定]       │
+├──────────────┬────────────────────────────────────────────────────────────────┤
+│ 本地         │ 來源切換 / 麵包屑路徑 / 篩選 / 排序 / 網格-清單                  │
+│ 網頁         ├────────────────────────────────────────────────────────────────┤
+│ 套件         │  媒體卡片／資料夾／站點影片列表                                  │
+│ 下載         │  點兩下播放；右鍵操作；選擇資料夾／拖曳新增                       │
+│ 設定         │                                                                │
+├──────────────┴────────────────────────────────────────────────────────────────┤
+│ 狀態列：來源數 | 已掃描/正在掃描 | 網路狀態 | 新版 / 資料包更新                │
+└───────────────────────────────────────────────────────────────────────────────┘
+```
+
+- **共用桌面 UI 不是 Android XML 或 iOS SwiftUI 翻譯**：桌面可有左側導航、可調側欄、多欄列表、鍵盤操作、視窗縮放與資料夾批次加入；保留五個功能概念即可。
+- **首次啟動 Wizard**：初始語言/主題 → 選來源資料夾（可跳過） → 播放器引擎檢查（codec/sidecar/license） → 隱私與更新偏好 → 完成。
+- **本地**：搜尋檔名/metadata、資料夾節點、排序（名稱/日期/大小/播放進度）、封面 lazy load、單/多選，掃描進度可取消。
+- **網頁**：地址列、返回/前進、重新整理、偵測影片按鈕、候選來源表（格式/解析度/host/標頭狀態），使用者明確按播放或下載；不能在瀏覽網頁時偷偷大量保存 Cookie。
+- **套件**：站點分組、更新狀態/頻率、影片卡、分類/搜尋/分頁、來源失效重試、規則包「上一版」回滾；只顯示允許合法訪問的來源。
+- **下載**：Queue、Active、Paused、Failed、Completed 篩選；檔案目的地/進度/剩餘預估（未知顯示 `—`）、重試原因、查看日誌（遮罩敏感資料）。
+- **設定**：一般（UI/語言）、播放器（硬解開關/字幕/音軌/快捷鍵）、來源（站點/遠端）、下載（存放路徑/併發/網路）、儲存管理（快取大小/清除）、更新（程式/資料包/通道）、關於（版本/第三方授權）。
+- **播放器**：MVP 獨立視窗可顯示媒體名稱、時間、暫停/Seek、音量、字幕/音軌、全螢幕，視窗關閉後把位置持久化並回到上次頁面。P1 改善與主 UI 視窗整合，但須通過平台渲染測試。
+
+### 20.2 快捷鍵、滑鼠與原生整合
+
+| 動作 | 預設 | 注意事項 |
+|---|---|---|
+| 播放/暫停 | Space（影片視窗焦點內） | 網頁表單聚焦時不可誤觸 |
+| 全螢幕 | F / Alt+Enter（Win）；F / macOS 標準全螢幕支援 | macOS Cmd+Ctrl+F 由系統處理時不得衝突 |
+| Seek -/+ 10 秒 | 左／右 | 長按鍵設防抖；只在有 Seek 能力時生效 |
+| 音量 | 上／下 | 網頁輸入框不攔截 |
+| 開啟檔案 | Ctrl+O / Cmd+O | 系統原生 chooser |
+| 開啟資料夾 | Ctrl+Shift+O / Cmd+Shift+O | 非法 / 無權限時有提示 |
+| 搜尋 | Ctrl+F / Cmd+F | 分頁語義；網頁內搜尋需要另命令 |
+| 設定 | Ctrl+, / Cmd+, | 可修改快捷鍵且檢查衝突 |
+
+- 支援系統檔案關聯、拖拉檔案進入程式、剪貼簿貼合法 URL、OS 開機自啟（可選預設關）、多視窗與螢幕 DPI/HiDPI、深色模式；某平台無法達成須列 `BLOCKED/NOT_SUPPORTED`。
+- 鍵鼠操作、focus trap、螢幕閱讀器基本標籤、字級縮放、縮放比例/Windows 高 DPI/mac Retina 確保功能可用。
+- 關閉主視窗有下載時提示「背景繼續／停止並退出」，若採系統托盤模式必須有明顯退出入口；macOS close vs quit 行為遵守慣例並測試。
+
+## 21. 桌面播放器後端詳細契約
+
+### 21.1 `DesktopPlayerEngine` 介面
+
+```rust
+// 設計示例。Codex 須整合現有 kurain-core DTO；不可盲貼形成雙軌資料模型。
+#[async_trait::async_trait]
+pub trait DesktopPlayerEngine: Send + Sync {
+    async fn open(&mut self, source: DesktopPlayableSource) -> Result<PlaybackSession, PlayerError>;
+    async fn play(&mut self) -> Result<(), PlayerError>;
+    async fn pause(&mut self) -> Result<(), PlayerError>;
+    async fn seek_to_ms(&mut self, position_ms: u64) -> Result<(), PlayerError>;
+    async fn set_volume(&mut self, volume: f32) -> Result<(), PlayerError>;
+    async fn set_speed(&mut self, speed: f32) -> Result<(), PlayerError>;
+    async fn current_state(&self) -> Result<PlaybackState, PlayerError>;
+    async fn close(&mut self) -> Result<(), PlayerError>;
+}
+```
+
+- `PlaybackSession` 必須有不可猜測 session ID；播放狀態包括 `CREATED, PREPARING, BUFFERING, PLAYING, PAUSED, ENDED, FAILED, CLOSED`；收到超時/斷線有明確 retry/backoff，任何 retry 不得重覆套用外站一次性權限。
+- 播放狀態每 1–5 秒發送 snapshot 供 UI 更新；歷史保存節流/原子提交，最後關閉時盡力 flush；進度小於 5 秒或距結束小於 5 秒時沿用原 Android 歸零語義（桌面可由共用規則統一）。
+- 解碼策略 `auto / hw / sw` 在桌面 P1 納入設定；要把 fallback 及支援 codec 探測結果回報 UI。不能宣稱 CPU 核心數就是解碼執行緒數。
+
+### 21.2 MPV sidecar MVP（P0 Spike → P1 正式）
+
+- `MpvSidecarEngine` 啟動受控播放進程，明確定義 `--no-config`/最小配置/隔離工作目錄/執行檔 hash，使用受權限保護的本地 IPC（Windows Named Pipe 或平台受支援的安全 IPC、macOS per-user 0700 socket directory）控制；**禁止接受網頁任意 shell command**。
+- MPV 播放二進位需為對應 `windows-x64`／`macos-arm64`／`macos-x64` 逐架構打包，不使用未檢驗/來源不明的 `mpv.exe`；開發前完成 mpv、FFmpeg、第三方 codec 的 **GPL/LGPL/license + redistributables** 審核，未通過不可隨 App 一起發佈。
+- `PlayerWindow` MVP 可採獨立、受控的 MPV 原生視窗，回到 App 時保存位置；不要第一回合就將 `HWND`/`NSView` 或 MPV GPU rendering 硬塞進 WebView DOM。
+- 不可把 Cookie、Bearer Token、API 私鑰、含帳密的 URL 寫到**命令列參數、進程列表、一般日誌、命名 pipe 全域位置或世界可讀的檔案**；來源需授權時先由 Rust `RemoteStreamGateway` 在 localhost / loopback 綁定隨機 port、短生命週期能力 token（或其他經 threat-model 驗證的安全 bridge），播放器只拿代理串流，Gateway 防 CSRF/SSRF、限制 localhost、驗證會話、處理 Range、到期即撤銷；該橋接初期可標為 P1，不可用不安全方式冒充已完成。
+- Gateway 不得當作可繞過網站認證、DRM 或跨主機權限政策的中繼服務。對受保護來源若安全傳遞尚未實作，顯示 `AUTHENTICATED_STREAM_NOT_SUPPORTED`，可改選已獲授權的本地檔案播放。
+- MPV 異常退出時應關閉 IPC handle、不重覆啟動孤兒進程，主程式可重新開啟播放且保留最近進度；卸載時應停止 sidecar，Windows Defender/macOS Gatekeeper 不可被安裝器繞過。
+
+### 21.3 格式測試矩陣
+
+| 來源/codec | Windows | macOS | 需要記錄 |
+|---|---|---|---|
+| 本機 H.264/AAC MP4 | P0 | P0 | 起播時間、音畫、Seek、續播 |
+| HTTP MP4 Range | P0 | P0 | Range、重定向、超時/斷點 |
+| HLS（含 AES-128 合法授權來源） | P1 | P1 | Manifest、相對 URI、正確音軌 |
+| MPEG-DASH | P1 | P1 | Manifest/representation/seek |
+| RTSP | P1 | P1 | LAN 裝置協定與 timeout |
+| HEVC/H.265、AV1 8/10-bit | P2 | P2 | 依 GPU/driver/codec 替換策略，不能全裝置保證 |
+| ASS/SRT 字幕、外掛音軌 | P1 | P1 | 字幕編碼/同步/字型/切換 |
+| HDR、Dolby Vision、DRM | 非預設保證 | 非預設保證 | 測試系統能力，DRM 不承諾 |
+
+## 22. 桌面網站偵測、來源套件、權限隔離
+
+1. `BrowserHost` 將可信主程式 UI WebView 與**不可信遠端網頁**完全隔離：站點視窗不可使用 Tauri `invoke`、檔案、shell、剪貼簿等 host 特權；遠端內容導覽及開外部網址走 allowlist 與使用者操作。
+2. 由宿主獨立維護 `WebCandidateDetector`，重用 `shared/web-scripts/webview-video-snapshot.js` 在各平台**允許範圍**的 page injection；WebView2/WKWebView 網路可觀測能力不等同 Android `shouldInterceptRequest`，不能承諾攔截任何 iframe/Blob/MSE/WebSocket/DRM。
+3. 來源候選去重、上限、失效清理、Origin/Referer/Cookie 原則與 Android 現況一致；跨站/不同帳號 cookie jar 嚴格隔離；使用者確認候選後才傳 trusted Rust parser。
+4. `kurain-sources` 的規則包與簽署 catalog 跨平台共用，但 `windowsDirect` / `macosDirect` 有自己的站點 allowlist，還需遵守內容來源版權、服務條款與當地法律。禁止透過資料包投放執行 JS、WASM、Python/Lua 載入器、新二進位、任意 shell 命令。
+5. HTTPS/TLS 開啟 hostname/憑證驗證；遇到頁面驗證或短效 cookies 不自動繞過網站驗證；CSP、Tauri capability scope、navigation allowlist 必須具負面測試。
+6. 安全驗收：惡意站點呼叫 `window.__TAURI__`/invoke、shell execute、任意 file read、跨站 cookie、注入 URL scheme、偽造下載包、超大壓縮包全部拒絕；站點錯誤應可重試或回退，不影響本地播放器。
+
+## 23. 本機掃描、遠端協定、下載與持久資料
+
+### 23.1 LocalLibrary（MVP）
+
+- 資料來源 `LocalFolderPermission`（由使用者挑選），Rust scanner 採 bounded concurrency、可取消、最大遍歷深度/數量可設、處理 symlink cycle/網路磁碟 timeout，封面抽取與檔案索引不同 worker。
+- 目錄移除不等於刪檔；物理檔案不存在時標示 `MISSING`；掃描時避免一次將大量縮圖放進 RAM。Windows 長路徑與 UNC、macOS `/Volumes` 外接磁碟及 APFS 權限都要測試。
+- OS 檔案關聯與外部開啟事件使用明確可解析 URI，並拒絕路徑 traversal、`file://` 執行檔開啟以及非媒體檔濫觸發。
+- SQLite schema：`media_item`（id/path_hash/title/size/mtime/duration/scan_version）、`media_folder`、`playback_history`、`remote_endpoint`（credential_ref，不存密碼）、`site_package`、`download_job`、`app_update_attempt`；所有 Schema migration 納入單元/升版/回滾測試。
+
+### 23.2 RemoteBrowser
+
+- `kurain-remote` 需要可取消列表、目錄分頁、Range/Seek、認證失敗與超時錯誤碼；HTTP/WebDAV 優先整合，SMB/SFTP/FTP 複用舊邏輯前先寫 Rust 接頭與同樣檔案 fixtures，不能直接把 Android Kotlin 遠端程式當成 desktop 可編譯。
+- SFTP host key pinning，Keychain/DPAPI credential refs，HTTPS redirect 不把 Authorization 洩給跨主機；不得允許惡意站點 JSON 讓 Rust 開始掃描任意 LAN IP（防 SSRF）。
+- NAS 檔案若不支援 Range，播放器 seek 必須顯示能力受限，不可假裝精準跳轉。
+
+### 23.3 DesktopDownloadWorker
+
+- `DownloadJob` 狀態：`QUEUED`, `RUNNING`, `PAUSING`, `PAUSED`, `VERIFYING`, `COMPLETED`, `FAILED_RETRYABLE`, `FAILED_FINAL`, `CANCELED`。
+- 索引/排程存 SQLite；下載到 `.part`，支援 Range/ETag/If-Range 的來源才續傳，否則刪暫存安全重下；完成前 verify 長度/hash（有權威 metadata 時）後原子 rename，不能超寫到路徑外。
+- 來源 Content-Length 未提供/Chunked transfer 時顯示未知大小；複合 HLS/DASH 的離線輸出與單 MP4 要區分；不可未經授權擅自處理 DRM。
+- 預設並行 `2`（桌面可在 UI 設定），同來源/同目標檔互斥、防重複工作；網路斷線重試退避，退避上限及最大重試次數需配置，系統關閉前 flush；開機恢復 `RUNNING` job 為 `PAUSED_RECOVERABLE` 並重新評估下載來源有效性。
+- App 更新前需協調下載：停止寫入、checkpoint、重啟恢復；升版 schema 須 migration forward/backward compatibility plan；若 OS 強制退出不得造成目標檔損壞。
+- Windows `AppData`、macOS `Application Support` 不直接儲存用戶影片（除非有選擇 app-managed 資料夾）；下載位置由使用者選擇並安全保存。
+
+### 23.4 Desktop Secure Storage
+
+- Windows 使用 DPAPI/Credential Manager（由可用 Rust lib 封裝並測試同使用者讀寫/登出）；macOS 使用 Keychain；敏感 token 最多以短效 handle 進入 Rust core，通訊/錯誤/log/redaction 審核。
+- 多使用者 Windows/macOS 帳號隔離，各使用者設定/更新包不應互相覆蓋；更新簽署公鑰是可公開常數，私鑰絕不存用戶端。
+- `factory reset` 和 `uninstall` 區分應用程式快取、播放歷史、下載檔、系統 Keychain；刪除前提示與清楚範圍。
+
+## 24. Windows EXE / macOS APP、DMG 打包與正式發佈
+
+### 24.1 Windows 交付契約（P0/P1）
+
+**必要產物**：
+
+```text
+releases/<version>/windows/x64/
+├── KurainVideo_<version>_x64-setup.exe   # NSIS 安裝程式，下載後可直接執行
+├── KurainVideo_<version>_x64-setup.exe.sig # Tauri updater 簽章（依 pinned Tauri 實際輸出）
+├── KurainVideo_<version>_x64-portable.zip # P2：內含 exe + 必要 sidecar/DLL/資源
+├── SHA256SUMS.txt
+└── release-metadata.json
+```
+
+- `KurainVideo.exe` 為**程式本體可執行檔**；`*-setup.exe` 為**安裝程式**，兩者必須在文件/UI 文字區分。必須滿足使用者要求「Windows 下載 exe 執行」，第一個交付以 NSIS `setup.exe` 為準；portable 為可選增強。
+- NSIS 做版本/安裝位址/桌面捷徑選擇/卸載/升版資料保留；對 USB/移動式需求，可選 portable ZIP，不在沒有真正封裝能力下承諾**單一 exe 包含全部 codec/DLL**。
+- `WebView2 Evergreen Runtime` 檢查：若未安裝，安裝器提供 Microsoft 官方 bootstrapper 或合理提示；不得直接假設 Edge Browser = WebView2 Runtime。不要私自包進過時固定版 WebView2 binary。
+- Windows 的 `msi` 為 P2 可選，用於公司部署；若需要 MSI，在 Windows runner + WiX 建置，避免標成跨系統皆可產生。
+- Authenticode code signing 對正式發佈 P1 必須有簽章與 timestamp 驗證；無商業憑證時 P0 開發測試可交 unsigned build，但最終上線 Gate 為 `BLOCKED_SIGNING`。不因 unsigned installer 仍能安裝就宣稱安全／SmartScreen 無提醒。
+- 64-bit x64 是 MVP；arm64 需獨立 runner/native libs/播放器驗收。更新 catalog 透過 `target=windows` + `arch=x86_64/aarch64` 選擇，不可交叉派送。
+
+### 24.2 macOS 交付契約（P0/P1）
+
+```text
+releases/<version>/macos/arm64/
+├── KurainVideo_<version>_arm64.dmg       # drag-install 發佈包
+├── KurainVideo.app                       # 包含正確 Info.plist / binaries / resources
+├── KurainVideo.app.tar.gz                # Tauri updater artifact（依實際版本決定）
+├── KurainVideo.app.tar.gz.sig
+├── SHA256SUMS.txt
+└── release-metadata.json
+```
+
+- macOS 本機 runner 使用 Xcode/Command Line Tools 建構 `.app` 與 `.dmg`，`arm64` Apple Silicon P0；Intel `x86_64` 需要分開 build/test 或組 universal（**不預設 universal 已可建置**）。
+- 發佈到一般使用者前必須以 Developer ID Application codesign（包含 helper/sidecar/框架／原生庫），啟用 Hardened Runtime，使用 Apple `notarytool` notarize、staple ticket，並在 Gatekeeper 已啟用的乾淨 macOS 環境驗證。
+- `Info.plist` / entitlements 僅申請實際使用權限，Apple sandbox/下載、磁碟書籤、網路訪問需視**實際發佈渠道**而定；若未上 Mac App Store，不可把 iOS App Store 更新政策誤套到 Direct Distribution。是否需 App Sandbox 做 ADR 並配合 macOS OS 權限。
+- 未簽署/未公證發佈會影響 Gatekeeper；開發測試包與正式包標示清楚。不可要求用戶關閉 Gatekeeper 當作正式流程。
+
+### 24.3 共通版本與依賴紀錄
+
+- 版本 `appVersion` SemVer、Windows PE file version、macOS `CFBundleShortVersionString`/build number、Tauri bundle version 與 catalog `platform/arch/channel` 必須由單一 release metadata 產生，不能手工不同步。
+- 交付 SBOM、license notices、binary origin/hash、播放器 backend 憑證／授權聲明、FFmpeg/mpv redistributable 條款、第三方圖片/字體授權；含 `GPL`/`LGPL` 的組合需在發佈前完成獨立法律審查，不能僅因 Rust/Tauri 本身可用就假設播放器可再發佈。
+- Tauri 官方 Windows 輸出預設 `setup.exe/MSI`、macOS `.app/.dmg`，具體 artifact 及 updater 檔名**以 pinned Tauri v2 真實 CI 產物為準**，上方命名是本專案 release packaging 最終輸出命名方案。
+
+## 25. 五個發佈 Channel 與更新協定擴展
+
+### 25.1 發佈渠道表（本章取代前文只有三渠道的範圍限制）
+
+| Channel | 原生 App 交付 | 原生 App 更新 | 宣告式資料包更新 |
+|---|---|---|---|
+| `androidSideload` | APK | signed full/verified delta APK + system installer | signed catalog + policy |
+| `androidPlay` | Play App Bundle | Google Play In-App Updates/Play feature | signed catalog + store policy |
+| `iosAppStore` | TestFlight / App Store | App Store | signed catalog + store policy |
+| `windowsDirect` | Authenticode NSIS `setup.exe` | Tauri signed updater（P1） | signed catalog + desktop allowlist |
+| `macosDirect` | Developer ID / notarized `.app` / `.dmg` | Tauri signed updater（P1） | signed catalog + desktop allowlist |
+
+- **必須分辨 2 種簽章**：一是本規格的 **Ed25519 signed metadata/catalog**（站點資料包/自家 release 指示），二是 **Tauri updater updater artifacts signatures**（Tauri 內建驗證），及 OS code signing（Windows Authenticode/macOS Developer ID）。不可拿三者互相代替或省略。
+- 初次正式上線原生 App 更新優先使用 **Tauri 官方 signed updater** 與完整更新 artifact，不能把 Android APK 的 `bsdiff` 邏輯直接套到 `.exe`、`.dmg` 或 `.app`。
+- 若未來要桌面原生更新也只傳 delta：先做 PoC，必須驗證 pinned old build 的完整 bundle bytes / signing / sidecar hashes / recovery; macOS bundle 必須最終 codesign + notarization 正常，Windows 重建結果與原簽 installer 完全一致，再做 staged roll-out，作為 P3 獨立 ADR，不阻擋 P1 發佈。
+- 資料包 JSON/圖示獨立更新：下載、verify signature/hash、staging、atomic activate、last-good rollback；與第 9A–9F 章相同，不允許任何 `.exe/.dll/.dylib/.so` 進入資料包。
+
+### 25.2 Desktop signed updater 狀態機
+
+```text
+IDLE → CHECKING → UPDATE_AVAILABLE → DOWNLOADING → VERIFYING
+     → READY_TO_INSTALL → CLOSING_WORKERS → INSTALLING → RESTARTING → SUCCESS
+                          │                     │
+                          └── FAILED / CANCELLED / RETRYABLE ──┘
+```
+
+- 檢查 endpoint: HTTPS、固定 trusted pubkey、`platform/arch/channel`、版本單調、expiry、catalog replay protection；使用者可手動檢查、選網路下載、查看 changelog。Tauri updater 的 payload 簽章驗證不可關閉。
+- 桌面正在播放或下載時，允許 postpone 安裝並顯示已下載版本；實際 install 前 checkpoint / stop sidecar / flush SQLite / stage 適當回復資訊。
+- 更新失敗不得刪除使用者媒體或遠端端點／資料包；安裝後執行健康啟動檢查（Rust database migration、UI ready、player probe）並產生診斷報告。若 Tauri/OS updater 不支援自動程式回滾，不要謊稱 rollback，應有下載舊版 signed installer 與危險版本停止發佈手冊。
+- 支援 stable/beta 渠道需 UI 明確選擇且受到 downgrade policy 及 schema 相容性保護；不允許任意網頁網址修改 updater key / endpoint。
+
+### 25.3 發佈 Schema 延伸（契約示例）
+
+```json
+{
+  "schemaVersion": 2,
+  "channel": "stable",
+  "catalogSequence": 42,
+  "releases": {
+    "windows": {
+      "x86_64": {
+        "version": "2.1.0",
+        "deliveryChannel": "windowsDirect",
+        "installerKind": "nsis",
+        "fullArtifactRef": "sha256:EXAMPLE_ONLY",
+        "tauriUpdaterSignatureRef": "sha256:EXAMPLE_SIG"
+      }
+    },
+    "macos": {
+      "aarch64": {
+        "version": "2.1.0",
+        "deliveryChannel": "macosDirect",
+        "installerKind": "dmg",
+        "fullArtifactRef": "sha256:EXAMPLE_ONLY",
+        "tauriUpdaterArtifactKind": "app.tar.gz",
+        "tauriUpdaterSignatureRef": "sha256:EXAMPLE_SIG"
+      }
+    }
+  }
+}
+```
+
+這只是**外層自家 catalog schema 延伸示例**，不等於 Tauri updater 官方 `latest.json` 的格式。Codex 必須提供明確轉換器、獨立測試 fixture、精確 artifact URL / sha256 / signature；不能讓此示例直接餵給 Tauri updater 當可執行配置。
+
+## 26. 專案目錄擴展、Windows/mac CI 與發佈腳本
+
+### 26.1 新增目錄（與前文 12.1 合併，不要改舊 Android app/ 位置）
+
+```text
+KurainVideo/
+├── app/                            # Android 1.4.0 原專案，保留
+├── ios/                            # SwiftUI 新平台
+├── rust/
+│   ├── crates/                      # 原共用 crates（不可複製另起第二份）
+│   └── Cargo.toml                   # workspace includes kurain-desktop 或 workspace members 規則
+├── desktop/
+│   ├── package.json / pnpm-lock.yaml
+│   ├── vite.config.ts / tsconfig.json
+│   ├── src/
+│   │   ├── app/                     # 路由、佈局、狀態管理
+│   │   ├── pages/{Local,Web,Sources,Downloads,Settings}/
+│   │   ├── components/{MediaCard,FileTree,PlayerControls,UpdateDialog}/
+│   │   ├── adapters/tauri-client.ts
+│   │   ├── contracts/               # generated; do not manual duplicate
+│   │   └── styles/
+│   ├── src-tauri/
+│   │   ├── Cargo.toml               # depends on ../../rust/crates/*
+│   │   ├── tauri.conf.json
+│   │   ├── capabilities/             # main host strictly permission-scoped
+│   │   ├── icons/
+│   │   ├── bin/                     # pinned approved mpv sidecar per target (if legal)
+│   │   └── src/
+│   │       ├── main.rs
+│   │       ├── commands/
+│   │       ├── bridges/
+│   │       ├── player/{mod.rs,mpv_sidecar.rs,stream_gateway.rs}/
+│   │       ├── storage/{sqlite.rs,secrets.rs,migrations.rs}/
+│   │       ├── local_library/
+│   │       └── updates/
+│   ├── tests/{unit,contract,e2e}/
+│   └── README.md
+├── shared/
+│   ├── schemas/
+│   ├── web-scripts/
+│   ├── fixtures/
+│   └── policy/{windows-direct-allowlist.json,macos-direct-allowlist.json}/
+├── tools/release/                   # 簽章、update catalog、發版工具延伸
+├── distribution/
+│   ├── windows/{nsis,signing,README.md}/
+│   ├── macos/{signing,notarize,README.md}/
+│   └── catalogs/
+├── scripts/
+│   ├── desktop-build.ps1
+│   ├── desktop-build.sh
+│   ├── desktop-test.ps1
+│   └── desktop-test.sh
+└── docs/cross-platform/
+    ├── DESKTOP-ADR.md
+    ├── DESKTOP-SECURITY.md
+    ├── DESKTOP-TEST-MATRIX.md
+    ├── DESKTOP-LICENSES.md
+    ├── WINDOWS-RELEASE.md
+    ├── MACOS-RELEASE.md
+    ├── PHASE-10-REPORT.md ... PHASE-14-REPORT.md
+    └── PHASE_STATUS.md             # 更新到 Phase 0-14
+```
+
+**Cargo 工作區的路徑衝突規則**：`desktop/src-tauri` 的 crate 可以用 path dependencies，若使用 `rust/Cargo.toml` 當 workspace root，需明確確認 Cargo workspace membership 及 `target` 共用目錄，不要建立互相衝突的 nested workspaces；在 Phase 10 用 `cargo metadata` 驗證唯一來源。
+
+### 26.2 開發命令（意圖級；指令精確性以實測與 README 為準）
+
+```powershell
+# Windows / PowerShell（根目錄）
+cd desktop
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm test
+pnpm tauri dev
+pnpm tauri build --bundles nsis
+# 預期輸出：Windows NSIS setup.exe，並核對輸出目錄及簽章
+```
+
+```bash
+# macOS / bash-zsh（根目錄）
+cd desktop
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm test
+pnpm tauri dev
+pnpm tauri build --bundles app,dmg
+# 正式版再進行 Developer ID codesign + notarytool + stapler + Gatekeeper smoke test
+```
+
+上述 `pnpm tauri` 需先正確安裝 Tauri CLI/插件、pin dependency 與 Rust toolchain；對可能隨版變更的 CLI flags，Phase 10 必須用 `tauri build --help` 和 build log 修正 README，不能硬套示例。
+
+### 26.3 CI Pipeline（必要）
+
+```text
+PR: rust-test, schema-contract-test, desktop-ts-lint-test,
+    Windows Tauri compile + smoke, macOS Tauri compile + smoke
+
+Tag Release: validate signed catalog + source policy
+   ├─ windows-latest x64: release build → approved sidecars → Authenticode
+   │   → NSIS exe → code sign verify → updater sign → SHA256 → upload staging
+   ├─ macos-latest arm64: release build → codesign all nested binaries
+   │   → Hardened Runtime → notarytool → staple → dmg → update artifact sign
+   │   → Gatekeeper smoke → SHA256 → upload staging
+   └─ optional: macOS Intel runner/build (if available/tested)
+
+Promote: asset inventory + integration tests + signature verification
+     → signed catalog immutable publish → stable rollout 5%→25%→100%
+     → rollback/kill-switch only in approved release metadata
+```
+
+- CI Secrets：Windows signing cert / password / HSM、Apple Developer ID / App Store Connect API / notary profile、Tauri updater private key、catalog signer private key，**一律 CI secret manager**，不進 GitHub repo、spec、diagnostics 或 release manifests。
+- Build matrix for app `os + arch + channel + appVersion + coreApiVersion + packageSchemaVersion`，不能因桌面建置把 Android/iOS runner 改壞。
+- smoke：UI 起動/關閉、檔案選擇、影片起播、進度續播、打開瀏覽器、資料包更新/回滾、更新簽名錯誤、sidecar 缺檔、OS 版本/權限、離線啟動。CI 環境不能完成的 GPU/實體 macOS 影片測試必須落 QA 矩陣且保持 `NOT_VERIFIED`。
+- 最低 release 產物附 checksums / license report / SBOM / source commit SHA / build commands / tests / known limitations。
+
+## 27. Desktop 安全/性能/故障驗收矩陣
+
+| ID | 驗收 | Windows | macOS | 判定 |
+|---|---|---|---|---|
+| DESK-001 | 開啟安裝器安裝並啟動主介面 | P0 | N/A | 真實 VM/PC PASS |
+| DESK-002 | 拖 `.dmg` 安裝 `.app`，Gatekeeper 正常啟動 | N/A | P0/P1 | 真實 Mac PASS |
+| DESK-003 | 本地 MP4/HTTP Range 播放、Seek、暫停、續播 | P0 | P0 | 記錄影片 fixture/time |
+| DESK-004 | 開啟 1,000 個 mock 媒體索引不卡死 UI | P1 | P1 | benchmark 數據、不宣稱固定 FPS |
+| DESK-005 | WebView2/WKWebView 來源偵測、不信任頁無 Tauri 系統權限 | P1 | P1 | host permission negative tests |
+| DESK-006 | 合法站點資料包更新/驗簽/回滾 | P1 | P1 | stale/signed/tampered fixtures |
+| DESK-007 | 下載中網路斷線/重啟/磁碟不足/ETag 變化 | P1 | P1 | 無 corrupt 完成檔 |
+| DESK-008 | HTTP/WebDAV NAS、有效 Range Seek、跨主機 redirect 不洩密 | P1 | P1 | 測試服務 + 異常狀態 |
+| DESK-009 | 更新簽章錯誤/舊 catalog replay/架構不合 | P1 | P1 | 全拒絕且不傷舊資料 |
+| DESK-010 | 影片/下載進行中更新 App，可暫緩並安全復原 | P1 | P1 | 真實安裝生命週期 |
+| DESK-011 | sidecar crash/消失 / 版本不符 / 未簽可執行檔 | P0/P1 | P0/P1 | 使用者可診斷，無孤兒進程 |
+| DESK-012 | 多顯示器/HiDPI/Retina、快捷鍵、無障礙基本功能 | P1 | P1 | 手動回歸證據 |
+| DESK-013 | Windows 簽章、mac notarization、第三方授權合格 | P1 | P1 | 發佈 gate，不可假通過 |
+| DESK-014 | 連續播放 2 小時+、記憶體、CPU/硬解降級 | P2 | P2 | 真實裝置性能報告 |
+| DESK-015 | 站點資料包任意可執行檔/惡意規則被拒絕 | P0/P1 | P0/P1 | Rust threat test + integration |
+
+- 每項需 `PASS / FAIL / BLOCKED_ENV / NOT_VERIFIED`、測試版本、系統 OS build、硬體 CPU/GPU、fixture source、開發 commit、執行指令/截圖/日誌。
+- 不能拿 Windows build 成功取代 macOS 端到端驗收，也不能拿 Tauri window 顯示成功取代 MPV codec/seek 驗收。
+- 效能目標為**建議指標**而非已測成果：冷啟動 p95、載入 1,000 筆列表時間、掃描吞吐、連續播放記憶體、下載 bytes、signed update bytes、sidecar crash recovery、增量包比例；先定 baseline 再定量化門檻並寫 `DESKTOP-TEST-MATRIX.md`。
+
+## 28. Codex 新增 Phase 10–14 與問題追蹤清單
+
+> **執行優先序**：沿用前文 Phase 0–9 的安全基礎；桌面可在 Phase 3 Rust 核心穩定後與 iOS 並行，但不能跳過簽署 package/catalog 核心。不論如何**先 Phase 10 實測可建置最小雙平台窗口**，再做大量 UI/播放器。舊章節中的 `0～9` 不再是專案全部階段；專案現在為 `Phase 0～14`。下列每個階段皆按第 11 章 `Phase Gate` 回報。
+
+### Phase 10 — Windows/macOS Desktop Spike & ADR（P0）
+
+**目的**：確認桌面技術、建置、發佈與 MPV 授權可行性，不做假完成的 UI。
+
+**工作**：
+1. 讀原本 Phase 0–9 docs、實際 Rust workspace、現有 repo；新建 `desktop/` Tauri v2 React TS baseline 及 Cargo path dependency；鎖 Rust/Node/pnpm/Tauri versions。
+2. Windows `pnpm tauri dev` + NSIS x64 build、WebView2 runtime 檢查、主窗口 Tauri command 呼叫 Rust `kurain-core` 健康檢查；macOS 同樣編譯並驗證 `.app` build。
+3. MPV sidecar vs libmpv feasibility/license Spike：短片起播、seek、window cleanup、程序啟動與安全 IPC，形成 `DESKTOP-ADR.md`、`DESKTOP-LICENSES.md`，選方案後才進入播放器正式功能。
+4. 盤點 Desktop signed updater/codesign/notary/runner/CI 發佈憑證與來源管理，明確 `BLOCKED_ENV` 項目；不要暗中取消 Android 的原本更新方案。
+5. 完成最小權限 `capabilities`、禁止 remote page invoke 的反向測試，確保 React 前端與不可信網站 WebView 嚴格分離。
+
+**DoD**：Windows + macOS 各自真實 runner 可編譯最小應用（無 runner 的一方 `BLOCKED_ENV`）；Rust host command 實作/測試、可檢視兩種 release artifacts、設計/風險報告。
+
+### Phase 11 — LocalLibrary + Basic Player（P0）
+
+**工作**：檔案/資料夾 chooser、Rust 背景掃描、SQLite migrations、UI 本地列表/搜尋/排序/拖放、MPV sidecar 本機 H.264/AAC/HTTP Progressive 播放、Seek/暫停/續播/錯誤處理、IPC crash recovery、安全帳密庫 adapter、快捷鍵。
+
+**DoD**：兩 OS 上的本機和 HTTP 影片從 UI 點擊到播放器操作閉環；連續啟動/關閉、player crash/重啟不破壞歷史；DESK-003 PASS。
+
+### Phase 12 — Sources / Web / Remote / Downloads（P1）
+
+**工作**：不信任 WebView 隔離、共用偵測腳本與 Rust 解析、站點瀏覽/資料包更新與 rollback、WebDAV/HTTP 瀏覽/Seek、桌面下載 SQLite worker、進度重啟續傳、secure stream gateway；SMB/FTP/SFTP 要真實測試後再開旗標。
+
+**DoD**：DESK-005～008/015 規格要求通過；來源認證不能出現在 shell args / 日誌，未授權來源給明確錯誤。
+
+### Phase 13 — Windows EXE / macOS DMG 安裝與安全更新（P1）
+
+**工作**：NSIS `setup.exe`，macOS `.app/.dmg`，x64/arm64 variants、WebView2 runtime、sidecar packing/licensing、Windows Authenticode、Apple codesign/notarytool/staple、Tauri updater signed metadata、下載暫緩/更新關閉 worker/健康回報、mac/Windows CI signing；先發 complete updater artifact，不暗許 binary delta。
+
+**DoD**：乾淨 Windows PC 可執行 setup.exe 升版且保留設定；乾淨 macOS 安裝簽章/公證後 `.app` 啟動且可更新；非簽更新全拒絕、更新 bytes 可統計。缺 signing 就標 `BLOCKED_SIGNING` 並保留測試包。
+
+### Phase 14 — QA、效能、正式跨四平台協作驗收（P1/P2）
+
+**工作**：Android 1.4.0 no-regression + iOS 狀態重新核對、桌面 release matrix、各平台資料包 schema 相容、分發 policy/security/license 審查、長時間播放/下載/多次更新壓力測試、運維 rollback/runbook、維護 `PHASE_STATUS.md`。
+
+**DoD**：實際通過的項目 PASS、未測明確標記；Release bundles／updater artifacts／checksums／SBOM／signed catalogs 可由 CI/release scripts 重現。
+
+### Issue 任務追蹤（建議）
+
+| ID | Phase | P | Work Item | Acceptance |
+|---|---|---|---|---|
+| KV-026 | 10 | P0 | Tauri/React bootstrap + Rust direct crate | Win/mac dev build |
+| KV-027 | 10 | P0 | desktop capability model + untrusted page security | deny malicious invoke |
+| KV-028 | 10 | P0 | MPV sidecar/license feasibility | signed source + playback Spike |
+| KV-029 | 11 | P0 | local library scan/cache/database | 1,000 mock file test |
+| KV-030 | 11 | P0 | desktop player state, seek, subtitle base | Win/mac playback smoke |
+| KV-031 | 11 | P0 | launch/file association/drag/drop/shortcuts | UI E2E |
+| KV-032 | 12 | P1 | website candidates + signed packages | security/parity tests |
+| KV-033 | 12 | P1 | WebDAV + RemoteStreamGateway | Range/credentials tests |
+| KV-034 | 12 | P1 | durable download worker/restore | resume + crash recovery |
+| KV-035 | 13 | P1 | Win NSIS + WebView2 + signature | clean Win install |
+| KV-036 | 13 | P1 | mac dmg/app + notarization | Gatekeeper enabled Mac |
+| KV-037 | 13 | P1 | Tauri signed updater + channel catalog | invalid signature rejected |
+| KV-038 | 14 | P1 | CI matrix/release reports/SBOM | reproducible build evidence |
+| KV-039 | 14 | P2 | performance/codec regression/full matrix | measured report |
+
+## 29. Codex 直接使用指令、驗收總表與參考來源
+
+### 29.1 直接貼給 Codex 的啟動指令（全平台）
+
+```text
+請以 `KurainVideo-v2.1-CODEX-SPEC.md` 作為唯一主開發規格：
+- Part I（第 0–17 章）為 Android 1.4.0 保護、iOS、Rust 核心、
+  安全資料包與 Android 差異更新的原始完整規格；
+- Part II（第 18–29 章）新增 Windows + macOS 桌面版，
+  Windows 使用 Tauri 2 + Rust + React TS 包成 NSIS setup.exe，
+  macOS 使用同一套 Tauri UI 包成簽章並公證的 .app/.dmg。
+
+先盤點實際專案與 Phase 0–9 report，根據先前完成進度挑選
+最早未完成的 phase；若 Rust shared core 足夠成熟，同步執行
+Phase 10 desktop spike，再逐步 Phase 11–14。
+不可重建既有 Android app/、不可破壞下載歷史/套件功能。
+
+不要只寫計畫：每回合完成該 Phase 的實際程式碼、
+可執行測試、build 指令、變更清單、驗收結果、
+BLOCKED_ENV / BLOCKED_SIGNING、rollback 與文件更新。
+對沒有 Mac/Xcode/Apple Developer ID/Windows signing cert/正式
+mpv 授權的項目保持未通過，不要捏造 PASS。
+
+絕不可做遠端可執行模組熱更新、DRM/登入驗證繞過或未授權下載。
+Windows 的 exe 與 installer exe 區分清楚；不要宣稱沒有 sidecar
+或依賴時可做單檔 portable exe。桌面原生更新先用 Tauri signed
+updater + full artifact，資料包才使用獨立簽署更新與回滾。
+```
+
+### 29.2 Windows/macOS 最終增加驗收 Checklist
+
+- [ ] `desktop/` 是同一份 React/TS UI，沒有 Windows/macOS 各寫一套前端。
+- [ ] Rust 與 Android/iOS 共用一份 crates 原始碼；桌面 Rust 直接依賴 crates，無一套重複核心。
+- [ ] Windows x64 交付可執行的 `setup.exe`，安裝後 `KurainVideo.exe` 起動；WebView2 依賴處理正確。
+- [ ] macOS arm64 交付 `.app` / `.dmg`，Gatekeeper 已開啟環境能啟動；簽章 + notarization 可證明。
+- [ ] local/HTTP 播放與歷史可用；sidecar 執行、安全 IPC、權限與授權報告具證據。
+- [ ] 五個主入口可用並能以桌面交互操作，不使用觸控行動版 UI 硬套桌面。
+- [ ] 網頁為不可信環境，不能任意 Tauri invoke/filesystem/shell。
+- [ ] 站點資料包與 Android/iOS 使用同版 Rust rules/schema/catalog；無可執行熱更新。
+- [ ] Tauri updater 獨立簽章驗證、五渠道 policy 正確，App 更新前暫緩下載工作。
+- [ ] 文件與 CI 提供 Win/mac runner、build log、SBOM/licenses、checksum、rollback 手冊；無環境時明確標記。
+
+### 29.3 官方工程參考（2026-10-14 核對，後續以開發時官方最新版為準）
+
+- Tauri v2 Windows Installer / NSIS MSI： https://v2.tauri.app/distribute/windows-installer/
+- Tauri v2 macOS `.app` bundle： https://v2.tauri.app/distribute/macos-application-bundle/
+- Tauri v2 `.dmg`： https://v2.tauri.app/distribute/dmg/
+- Tauri v2 Updater（必須產生/驗證 artifact signature）： https://v2.tauri.app/plugin/updater/
+- Tauri v2 capabilities / remote-webview 權限： https://v2.tauri.app/security/capabilities/
+- Microsoft WebView2 Runtime distribution： https://learn.microsoft.com/microsoft-edge/webview2/concepts/distribution
+- Apple Notarization（Developer ID、Hardened Runtime、notarytool）： https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution
+- mpv Copyright/license（GPL/LGPL 條件視精確 build 與 linked libraries）： https://github.com/mpv-player/mpv/blob/master/Copyright
+
+### 29.4 舊章節與 v2.1 一致性規則
+
+1. 原 `1.2`、`2`、`12.1` 章只畫 Android/iOS，**現在加上本 Part II 的 Windows/macOS，四平台採同一 Rust 核心**；其餘與 Part II 不衝突的要求繼續有效。
+2. 原 `2.5`、`9B`、`9F` 三個發布渠道，現在擴增為五個；`windowsDirect/macosDirect` 不套 iOS App Store 或 Android APK updater 的規則；資料包仍限靜態宣告。
+3. 原 `11` 章 Phase 0–9 與 Issue KV-001～KV-025 完整保留，新增 Phase 10–14、KV-026～KV-039；後續所有進度總表、CI 與報告必須以 Phase 0–14 表示。
+4. 原 `15` 章 Codex 首次開發指令仍可用（偏手機版本），**新全平台 Codex 應用本章 29.1**。本章不能因缺 Mac CI、簽章或 mpv 合法再發佈前提而提早宣稱四平台完成。
+5. 本文件所有路徑/檔名/版本前述舉例若與實際 repo 衝突，先寫 ADR/phase report，再修改腳本與規格；不得由 Codex 偷偷跳過任何平台功能或資料保護要求。
+
+**v2.1 最終產品結論**：Kurain Video 形成四平台產品：Android（Kotlin/Media3）、iOS（SwiftUI/AVPlayer）、Windows（Tauri/React + Rust/desktop player，NSIS `.exe`）、macOS（Tauri/React + Rust/desktop player，`.app/.dmg`），共享 Rust Domain Core、宣告式站點規則與驗證過的資料包更新；原生 App 的安全更新分別按平台發佈與簽章機制處理。規格設計與測試計畫不是已交付產品，只有具實際 build、E2E、簽章與授權驗證的項目才能標 `DONE`。**
